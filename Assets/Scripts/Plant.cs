@@ -13,13 +13,22 @@ public class Plant : MonoBehaviour
     public Canvas canvasUI;
     public MeshRenderer rend;
 
-    // Information to be displayed
+    // Information from the plant
     public string comName;
     public string sciName;
     public string family;
     [Multiline]
     public string description;
-    
+    public string moleAname;
+    public string moleAclass;
+    public string moleBname;
+    public string moleBclass;
+    public string moleCname;
+    public string moleCclass;
+    public string medicinal;
+    public int toxicity;
+    public int hardiness;
+
     // Locations where information is being displayed
     public TextMeshProUGUI tmp_comName;
     public TextMeshPro tmp_sciName;
