@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using Vuforia;
 
 public class Information : MonoBehaviour
 {
@@ -75,27 +74,48 @@ public class Information : MonoBehaviour
         int toxicity;
         string description;
         int hardiness;
-
+        GameObject emptyGameObject;
+        GameObject model;
         for (int i = 0; i < plants.Count; i++) // For each plant in the list
         {
-            if (!test) return test; // If there's an error then end the task with a false
-            else
-            {
-                // Get information from the list and pair it with the appropriate
-                comName = plants[i][0];
-                sciName = plants[i][1];
-                family = plants[i][2];
-                moleAname = plants[i][3];
-                moleAclass = plants[i][4];
-                moleBname = plants[i][5];
-                moleBclass = plants[i][6];
-                moleCname = plants[i][7];
-                moleCclass = plants[i][8];
-                medicinal = plants[i][9];
-                if (!int.TryParse(plants[i][10], out toxicity)) Debug.LogError("ERROR : " + comName + "'s toxicity non-convertable : '" + plants[i][10] + "'"); // If the toxicity is not in the form ex:"123", then display an error message
-                description = plants[i][11];
-                if (!int.TryParse(plants[i][12], out hardiness)) Debug.LogError("ERROR : " + comName + "'s hardiness non-convertable : '" + plants[i][12] + "'"); // If the hardiness is not in the form ex:"123", then display an error message
-            }
+            // Get information from the list and pair it with the appropriate
+            comName = plants[i][0];
+            sciName = plants[i][1];
+            family = plants[i][2];
+            moleAname = plants[i][3];
+            moleAclass = plants[i][4];
+            moleBname = plants[i][5];
+            moleBclass = plants[i][6];
+            moleCname = plants[i][7];
+            moleCclass = plants[i][8];
+            medicinal = plants[i][9];
+            if (!int.TryParse(plants[i][10], out toxicity)) Debug.LogError("ERROR : " + comName + "'s toxicity non-convertable : '" + plants[i][10] + "'"); // If the toxicity is not in the form ex:"123", then display an error message
+            description = plants[i][11];
+            if (!int.TryParse(plants[i][12], out hardiness)) Debug.LogError("ERROR : " + comName + "'s hardiness non-convertable : '" + plants[i][12] + "'"); // If the hardiness is not in the form ex:"123", then display an error message
+            
+            // Create empty game ojbect for plant copyed from 'TargetTemplate'
+            emptyGameObject = Instantiate(GameObject.Find("TargetTemplate"));
+            emptyGameObject.name = "Track : " + comName;
+            // Create a cube for visualization purposes and set its transform
+            //model = Instantiate((Resources.Load<GameObject>("Assets/temp/models/" + comName)),new Vector3 (0.0f, 0.0f, 0.0f), Quaternion.identity); [Intigrate models later]
+            model = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            model.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+            model.transform.localRotation = Quaternion.identity;
+            model.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
+            model.name = "Model : " + comName;
+            
+            model.AddComponent<Plant>();
+            // Set variables
+            model.GetComponent<Plant>().comName = comName;
+            model.GetComponent<Plant>().sciName = sciName;
+            model.GetComponent<Plant>().family = family;
+            model.GetComponent<Plant>().description = description;
+            model.transform.parent = emptyGameObject.transform;
+
+            // Set Empty Game Object Transform
+            emptyGameObject.transform.position = new Vector3((float)(0.25 * i), 0.0f, 0.0f);
+            emptyGameObject.transform.rotation = Quaternion.identity;
+            emptyGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
         }
         return test;
     }

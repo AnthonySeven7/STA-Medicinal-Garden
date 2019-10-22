@@ -40,6 +40,7 @@ public class Plant : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        canvasUI = GameObject.Find("Pineapple_Model").GetComponent<Plant>().canvasUI; // Temporary
         rend = this.GetComponent<MeshRenderer>();
     }
 
@@ -62,7 +63,7 @@ public class Plant : MonoBehaviour
         canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: " + sciName;
         //tmp_sciName.text = sciName;  [Not yet implemented]
         canvasUI.transform.Find("Family Name").GetComponent<Text>().text = "Family Name: " + family;
-        tmp_fam.text = family;
+        //tmp_fam.text = family; [Implement Later]
         canvasUI.transform.Find("Description").GetComponent<Text>().text = "Description: " + description;
         current = true; // Update current state
     }
@@ -70,14 +71,14 @@ public class Plant : MonoBehaviour
     // If the model is not being tracked
     public void Isdisabled()
     {
-        Debug.Log("Diabled"); // Output to console
+        Debug.Log("Disabled"); // Output to console
 
         // Set all displays to their default messages
         canvasUI.transform.Find("Common Name").GetComponent<Text>().text = "Common Name: ";
         canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: ";
         canvasUI.transform.Find("Family Name").GetComponent<Text>().text = "Family Name: ";
         canvasUI.transform.Find("Description").GetComponent<Text>().text = "Description: ";
-        tmp_fam.text = "";
+        //tmp_fam.text = ""; [Implement Later]
         current = false; // Update current state
     }
 }
