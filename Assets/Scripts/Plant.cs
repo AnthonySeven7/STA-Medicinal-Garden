@@ -30,9 +30,9 @@ public class Plant : MonoBehaviour
     public int hardiness;
 
     // Locations where information is being displayed
-    public TextMeshProUGUI tmp_comName;
-    public TextMeshPro tmp_sciName;
-    public TextMeshPro tmp_fam;
+    public TextMeshProUGUI tmp_comName = null;
+    public TextMeshPro tmp_sciName = null;
+    public TextMeshPro tmp_fam = null;
     
     // Test variable to prevent overlooping
     private bool current = true;   
@@ -40,7 +40,6 @@ public class Plant : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        canvasUI = GameObject.Find("Pineapple_Model").GetComponent<Plant>().canvasUI; // Temporary
         rend = this.GetComponent<MeshRenderer>();
     }
 
@@ -55,15 +54,13 @@ public class Plant : MonoBehaviour
     // If the model is being tracked
     public void Isenabled()
     {
-        Debug.Log("Enabled"); // Output to console
-
         //Set all displays to show current plant's information
         canvasUI.transform.Find("Common Name").GetComponent<Text>().text = "Common Name: " + comName;
-        tmp_comName.text = comName;
+        if (tmp_comName != null) tmp_comName.text = comName;
         canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: " + sciName;
-        //tmp_sciName.text = sciName;  [Not yet implemented]
+        if (tmp_sciName != null) tmp_sciName.text = sciName;
         canvasUI.transform.Find("Family Name").GetComponent<Text>().text = "Family Name: " + family;
-        //tmp_fam.text = family; [Implement Later]
+        if (tmp_fam != null) tmp_fam.text = family;
         canvasUI.transform.Find("Description").GetComponent<Text>().text = "Description: " + description;
         current = true; // Update current state
     }
@@ -71,8 +68,6 @@ public class Plant : MonoBehaviour
     // If the model is not being tracked
     public void Isdisabled()
     {
-        Debug.Log("Disabled"); // Output to console
-
         // Set all displays to their default messages
         canvasUI.transform.Find("Common Name").GetComponent<Text>().text = "Common Name: ";
         canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: ";
@@ -83,7 +78,7 @@ public class Plant : MonoBehaviour
     }
 }
 
-//#if UNITY_EDITOR
+#if UNITY_EDITOR
 // Edit the look of the code in the inspector
 [CustomEditor (typeof(Plant))]
 [CanEditMultipleObjects]
@@ -132,4 +127,4 @@ public class PlantEditor : Editor
         }
     }
 }
-//#endif
+#endif
