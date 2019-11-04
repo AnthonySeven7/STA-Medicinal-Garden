@@ -14,18 +14,18 @@ public class Plant : MonoBehaviour
     public MeshRenderer rend;
 
     // Information from the plant
-    public string comName;
-    public string sciName;
-    public string family;
+    public string comName = null;
+    public string sciName = null;
+    public string family = null;
     [Multiline]
-    public string description;
-    public string moleAname;
-    public string moleAclass;
-    public string moleBname;
-    public string moleBclass;
-    public string moleCname;
-    public string moleCclass;
-    public string medicinal;
+    public string description = null;
+    public string moleAname = null;
+    public string moleAclass = null;
+    public string moleBname = null;
+    public string moleBclass = null;
+    public string moleCname = null;
+    public string moleCclass = null;
+    public string medicinal = null;
     public int toxicity;
     public int hardiness;
 
@@ -57,7 +57,7 @@ public class Plant : MonoBehaviour
         //Set all displays to show current plant's information
         canvasUI.transform.Find("Common Name").GetComponent<Text>().text = "Common Name: " + comName;
         if (tmp_comName != null) tmp_comName.text = comName;
-        canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: " + sciName;
+        canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: <i>" + sciName + "</i>";
         if (tmp_sciName != null) tmp_sciName.text = sciName;
         canvasUI.transform.Find("Family Name").GetComponent<Text>().text = "Family Name: " + family;
         if (tmp_fam != null) tmp_fam.text = family;
@@ -73,7 +73,6 @@ public class Plant : MonoBehaviour
         canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: ";
         canvasUI.transform.Find("Family Name").GetComponent<Text>().text = "Family Name: ";
         canvasUI.transform.Find("Description").GetComponent<Text>().text = "Description: ";
-        //tmp_fam.text = ""; [Implement Later]
         current = false; // Update current state
     }
 }
@@ -87,6 +86,7 @@ public class PlantEditor : Editor
     // Initialize Varialbes
     bool showDesc = false; // showing the description?
     bool showInfo = true; // showing any information?
+    bool showMed = false; // showing the medicinal section?
 
     // In the inspector
     public override void OnInspectorGUI()
@@ -97,33 +97,95 @@ public class PlantEditor : Editor
         if (showInfo)
         {
             // Common Name
-            EditorGUILayout.BeginHorizontal();
-            EditorGUIUtility.labelWidth = 65;
-            model.comName = EditorGUILayout.TextField("ComName", model.comName, GUILayout.MaxWidth(180));
-            EditorGUIUtility.labelWidth = 45;
-            model.tmp_comName = (TextMeshProUGUI)EditorGUILayout.ObjectField("Display", model.tmp_comName, typeof(TextMeshProUGUI), true);
-            EditorGUILayout.EndHorizontal();
+            if (model.comName != null && model.comName != "")
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = 65;
+                model.comName = EditorGUILayout.TextField("ComName", model.comName, GUILayout.MaxWidth(180));
+                EditorGUIUtility.labelWidth = 45;
+                if (model.tmp_comName != null) model.tmp_comName = (TextMeshProUGUI)EditorGUILayout.ObjectField("Display", model.tmp_comName, typeof(TextMeshProUGUI), true);
+                else GUILayout.Label("     Display Not Provided");
+                EditorGUILayout.EndHorizontal();
+            }
 
             // Scientific Name
-            EditorGUILayout.BeginHorizontal();
-            EditorGUIUtility.labelWidth = 65;
-            model.sciName = EditorGUILayout.TextField("SciName", model.sciName, GUILayout.MaxWidth(180));
-            EditorGUIUtility.labelWidth = 45;
-            model.tmp_sciName = (TextMeshPro)EditorGUILayout.ObjectField("Display", model.tmp_sciName, typeof(TextMeshPro), true);
-            EditorGUILayout.EndHorizontal();
+            if (model.sciName != null && model.sciName != "")
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = 65;
+                model.sciName = EditorGUILayout.TextField("SciName", model.sciName, GUILayout.MaxWidth(180));
+                EditorGUIUtility.labelWidth = 45;
+                if (model.tmp_sciName != null) model.tmp_sciName = (TextMeshPro)EditorGUILayout.ObjectField("Display", model.tmp_sciName, typeof(TextMeshPro), true);
+                else GUILayout.Label("     Display Not Provided");
+                EditorGUILayout.EndHorizontal();
+            }
 
             // Family
-            EditorGUILayout.BeginHorizontal();
-            EditorGUIUtility.labelWidth = 65;
-            model.family = EditorGUILayout.TextField("Family", model.family, GUILayout.MaxWidth(180));
-            EditorGUIUtility.labelWidth = 45;
-            model.tmp_fam = (TextMeshPro)EditorGUILayout.ObjectField("Display", model.tmp_fam, typeof(TextMeshPro), true);
-            EditorGUILayout.EndHorizontal();
+            if (model.family != null && model.family != "")
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = 65;
+                model.family = EditorGUILayout.TextField("Family", model.family, GUILayout.MaxWidth(180));
+                EditorGUIUtility.labelWidth = 45;
+                if (model.tmp_fam != null) model.tmp_fam = (TextMeshPro)EditorGUILayout.ObjectField("Display", model.tmp_fam, typeof(TextMeshPro), true);
+                else GUILayout.Label("     Display Not Provided");
+                EditorGUILayout.EndHorizontal();
+            }
 
             // Description
-            showDesc = EditorGUILayout.Foldout(showDesc, "Description");
-            EditorStyles.textArea.wordWrap = true;
-            if (showDesc) model.description = EditorGUILayout.TextArea(model.description, EditorStyles.textArea, GUILayout.Width(350), GUILayout.ExpandWidth(true));
+            if (model.description != null && model.description != "")
+            {
+                showDesc = EditorGUILayout.Foldout(showDesc, "Description");
+                EditorStyles.textArea.wordWrap = true;
+                if (showDesc) model.description = EditorGUILayout.TextArea(model.description, EditorStyles.textArea, GUILayout.Width(350), GUILayout.ExpandWidth(true));
+            }
+
+            // Molecules
+            if (model.moleAname != null && model.moleAclass != null && model.moleAname != "" && model.moleAclass != "")
+            {
+                GUILayout.Label("                                              Molecules");
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = 65;
+                model.moleAname = EditorGUILayout.TextField("A: Name", model.moleAname, GUILayout.MaxWidth(200));
+                EditorGUIUtility.labelWidth = 45;
+                model.moleAclass = EditorGUILayout.TextField("Class", model.moleAclass, GUILayout.MaxWidth(180));
+                EditorGUILayout.EndHorizontal();
+            }
+            else GUILayout.Label("Molecules: Not Provided");
+
+            if (model.moleBname != null && model.moleBclass != null && model.moleBname != "" && model.moleBclass != "")
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = 65;
+                model.moleBname = EditorGUILayout.TextField("B: Name", model.moleBname, GUILayout.MaxWidth(200));
+                EditorGUIUtility.labelWidth = 45;
+                model.moleBclass = EditorGUILayout.TextField("Class", model.moleBclass, GUILayout.MaxWidth(180));
+                EditorGUILayout.EndHorizontal();
+            }
+
+            if (model.moleCname != null && model.moleCclass != null && model.moleCname != "" && model.moleCclass != "")
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUIUtility.labelWidth = 65;
+                model.moleCname = EditorGUILayout.TextField("C: Name", model.moleCname, GUILayout.MaxWidth(200));
+                EditorGUIUtility.labelWidth = 45;
+                model.moleCclass = EditorGUILayout.TextField("Class", model.moleCclass, GUILayout.MaxWidth(180));
+                EditorGUILayout.EndHorizontal();
+            }
+
+            // Medicinal
+            if (model.medicinal != null && model.medicinal != "")
+            {
+                showDesc = EditorGUILayout.Foldout(showDesc, "Medicinal");
+                EditorStyles.textArea.wordWrap = true;
+                if (showMed) model.medicinal = EditorGUILayout.TextArea(model.medicinal, EditorStyles.textArea, GUILayout.Width(350), GUILayout.ExpandWidth(true));
+            }
+
+            // Toxicity
+            GUILayout.Label("Toxicity: " + model.toxicity);
+
+            // Hardiness
+            GUILayout.Label("Hardiness: " + model.hardiness);
         }
     }
 }
