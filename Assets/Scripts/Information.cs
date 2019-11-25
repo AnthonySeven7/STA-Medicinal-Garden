@@ -14,6 +14,7 @@ public class Information : MonoBehaviour
     public List<string[]> plants;
     public GameObject prefab;
     public List<GameObject> plantObj;
+    public TextMeshProUGUI testText;
     void Start()
     {
         // Get a list of all of the plants with all of their information
@@ -144,11 +145,12 @@ public class Information : MonoBehaviour
                 string name = "";
                 foreach(char ch in plants[x][0])
                 {
-                    if (ch != ' ') name += ch;
+                    if (ch != ' ') name += ch; // Get the name of the plant without spaces
                 }
                 if (plantObj[i].name.ToLower() == name.ToLower())
                 {
                     match = true;
+                    // Gather information
                     comName = plants[x][0];
                     sciName = plants[x][1];
                     family = plants[x][2];
@@ -163,23 +165,30 @@ public class Information : MonoBehaviour
                     description = plants[x][11];
                     if (!int.TryParse(plants[x][12], out hardiness)) Debug.Log("<color=red>ERROR : " + comName + "'s hardiness non-convertable : '" + plants[x][12] + "'</color>"); // If the hardiness is not in the form ex:"123", then display an error message
                     emptyGameObject = plantObj[i];
+
                     // Create a cube for visualization purposes and set its transform
-                    //model = Instantiate((Resources.Load<GameObject>("Assets/temp/models/" + comName)),new Vector3 (0.0f, 0.0f, 0.0f), Quaternion.identity); [Intigrate models later]
-                    model = Instantiate(prefab, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity); //Assets/Prefabs/NameTag.prefab
-                    model.transform.GetChild(0).GetComponent<Canvas>().worldCamera = Camera.main;
-                    //model.AddComponent<Plant>();
+                    GameObject myprefab = getPrefab(comName);
+                    model = Instantiate(myprefab, new Vector3(0.0f, 0.02f, 0.0f), Quaternion.identity); //Assets/Prefabs/NameTag.prefab
                     model.GetComponent<Plant>().rend = model.GetComponent<MeshRenderer>();
                     model.GetComponent<Plant>().canvasUI = canvasUI;
-                    // Set variables
+
+                    // Transfer Information
                     model.GetComponent<Plant>().comName = comName;
                     model.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = comName;
                     model.GetComponent<Plant>().sciName = sciName;
                     model.GetComponent<Plant>().family = family;
                     model.GetComponent<Plant>().description = description;
+                    model.GetComponent<Plant>().moleAname = moleAname;
+                    model.GetComponent<Plant>().moleAclass = moleAclass;
+                    model.GetComponent<Plant>().moleBname = moleBname;
+                    model.GetComponent<Plant>().moleBclass = moleBclass;
+                    model.GetComponent<Plant>().moleCname = moleCname;
+                    model.GetComponent<Plant>().moleCclass = moleCclass;
+                    model.GetComponent<Plant>().medicinal = medicinal;
+                    model.GetComponent<Plant>().toxicity = toxicity;
+                    model.GetComponent<Plant>().hardiness = hardiness;
+
                     model.transform.parent = emptyGameObject.transform;
-                    //model.transform.localPosition = new Vector3(0.0f, 0.1f, 0.0f);
-                    //model.transform.localRotation = Quaternion.identity;
-                    //model.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                     model.name = "Model : " + comName;
                     // Set Empty Game Object Transform
                     emptyGameObject.transform.position = new Vector3((float)(0.25 * i), 0.0f, 0.0f);
@@ -187,7 +196,7 @@ public class Information : MonoBehaviour
                     emptyGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                 }
             }
-            //if (!match) Debug.Log("<color=red>ERROR : " + plantObj[i].name + " does not match any plant in database.</color>");
+            if (!match) Debug.Log("<color=red>ERROR : " + plantObj[i].name + " does not match any plant in database.</color>");
             plantObj[i].name = ("Track : " + plantObj[i].name);
         }
         return test1;
@@ -228,5 +237,13 @@ public class Information : MonoBehaviour
         {
             Debug.LogError("<color=yellow>Failed to load dataset: '" + dataSetName + "'</color>");
         }
+    }
+
+    GameObject getPrefab(string name)
+    {
+        if (name[name.Length - 1] == ' ') name = name.Substring(0, name.Length - 1);
+        GameObject mprefab = Resources.Load<GameObject>("Prefabs/" + name);
+        if (mprefab == null) mprefab = prefab;
+        return mprefab;
     }
 }

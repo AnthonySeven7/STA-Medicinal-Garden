@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 #if UNITY_EDITOR
-    using UnityEditor;
+using UnityEditor;
 #endif
 using TMPro;
 
@@ -26,13 +26,17 @@ public class Plant : MonoBehaviour
     public string moleCname = null;
     public string moleCclass = null;
     public string medicinal = null;
-    public int toxicity;
-    public int hardiness;
+    public int toxicity = -1;
+    public int hardiness = 1;
 
     // Locations where information is being displayed
     public TextMeshProUGUI tmp_comName = null;
-    public TextMeshPro tmp_sciName = null;
-    public TextMeshPro tmp_fam = null;
+    public TextMeshProUGUI tmp_sciName = null;
+    public TextMeshProUGUI tmp_fam = null;
+    public TextMeshProUGUI tmp_description = null;
+
+    // A list of all the current buttons on the GUI
+    public List<string> buttons;
     
     // Test variable to prevent overlooping
     private bool current = true;   
@@ -40,7 +44,12 @@ public class Plant : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+
         rend = this.GetComponent<MeshRenderer>();
+        tmp_comName = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Common Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_sciName = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Scientific Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_fam = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Family Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_description = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Description").gameObject.GetComponent<TextMeshProUGUI>();
     }
 
     // Update is called once per frame
@@ -55,13 +64,11 @@ public class Plant : MonoBehaviour
     public void Isenabled()
     {
         //Set all displays to show current plant's information
-        canvasUI.transform.Find("Common Name").GetComponent<Text>().text = "Common Name: " + comName;
-        if (tmp_comName != null) tmp_comName.text = comName;
-        canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: <i>" + sciName + "</i>";
-        if (tmp_sciName != null) tmp_sciName.text = sciName;
-        canvasUI.transform.Find("Family Name").GetComponent<Text>().text = "Family Name: " + family;
-        if (tmp_fam != null) tmp_fam.text = family;
-        canvasUI.transform.Find("Description").GetComponent<Text>().text = "Description: " + description;
+        tmp_comName.text = "<b>Common Name: </b>" + comName;
+        tmp_sciName.text = "<b>Scientific Name: </b><i>" + sciName + "</i>";
+        tmp_fam.text = "<b>Family Name: </b>" + family;
+        tmp_description.text = "<b>Description: </b>" + description;
+        GUIEnabled();
         current = true; // Update current state
     }
 
@@ -69,11 +76,65 @@ public class Plant : MonoBehaviour
     public void Isdisabled()
     {
         // Set all displays to their default messages
-        canvasUI.transform.Find("Common Name").GetComponent<Text>().text = "Common Name: ";
-        canvasUI.transform.Find("Scientific Name").GetComponent<Text>().text = "Scientific Name: ";
-        canvasUI.transform.Find("Family Name").GetComponent<Text>().text = "Family Name: ";
-        canvasUI.transform.Find("Description").GetComponent<Text>().text = "Description: ";
+        tmp_comName.text = "<b>Common Name: </b>";
+        tmp_sciName.text = "<b>Scientific Name: </b>";
+        tmp_fam.text = "<b>Family Name: </b>";
+        tmp_description.text = "<b>Description: </b>";
+        GUIDisabled();
         current = false; // Update current state
+    }
+
+    public void GUIEnabled()
+    {
+        int count = 0;
+        int totalButtons = 0;
+        buttons.Add("Options_Button");
+        buttons = new List<string>();
+        if ((comName != null && comName != "") || (sciName != null && sciName != "") || (family != null && family != "") || (description != null && description != ""))
+        {
+            buttons.Add("GeneralInfo_Button");
+            totalButtons++;
+        }
+        if (moleAname != null && moleAclass != null && moleAname != "" && moleAclass != "")
+        {
+            buttons.Add("MoleA_Button");
+            totalButtons++;
+        }
+        if (moleBname != null && moleBclass != null && moleBname != "" && moleBclass != "")
+        {
+            buttons.Add("MoleB_Button");
+            totalButtons++;
+        }
+        if (moleCname != null && moleCclass != null && moleCname != "" && moleCclass != "")
+        {
+            buttons.Add("MoleC_Button");
+            totalButtons++;
+        }
+        if (toxicity != 0 || hardiness != 0)
+        {
+            buttons.Add("MoreInfo_Button");
+            totalButtons++;
+        }
+        foreach(string button in buttons) // [Change later for animations]
+        {
+            GameObject currButton = canvasUI.transform.Find("MainPanel").Find(button).gameObject;
+            currButton.SetActive(true);
+            currButton.transform.position = new Vector3((float)(540-(106*(totalButtons-1))+(206*count)), 0.0f, 0.0f);
+            count++;
+        }
+    }
+
+    public void GUIDisabled()
+    {
+        foreach (Transform button in canvasUI.transform.Find("MainPanel").transform)
+        {
+            if (button.name != "Options_Button")
+            {
+                button.GetComponentInChildren<TextMeshProUGUI>().text = button.GetComponent<GUIDisplay>().Buttontext;
+                button.GetComponent<Image>().color = button.GetComponent<GUIDisplay>().Button_color_normal;
+                button.gameObject.SetActive(false);
+            }
+        }
     }
 }
 
@@ -115,7 +176,7 @@ public class PlantEditor : Editor
                 EditorGUIUtility.labelWidth = 65;
                 model.sciName = EditorGUILayout.TextField("SciName", model.sciName, GUILayout.MaxWidth(180));
                 EditorGUIUtility.labelWidth = 45;
-                if (model.tmp_sciName != null) model.tmp_sciName = (TextMeshPro)EditorGUILayout.ObjectField("Display", model.tmp_sciName, typeof(TextMeshPro), true);
+                if (model.tmp_sciName != null) model.tmp_sciName = (TextMeshProUGUI)EditorGUILayout.ObjectField("Display", model.tmp_sciName, typeof(TextMeshProUGUI), true);
                 else GUILayout.Label("     Display Not Provided");
                 EditorGUILayout.EndHorizontal();
             }
@@ -127,7 +188,7 @@ public class PlantEditor : Editor
                 EditorGUIUtility.labelWidth = 65;
                 model.family = EditorGUILayout.TextField("Family", model.family, GUILayout.MaxWidth(180));
                 EditorGUIUtility.labelWidth = 45;
-                if (model.tmp_fam != null) model.tmp_fam = (TextMeshPro)EditorGUILayout.ObjectField("Display", model.tmp_fam, typeof(TextMeshPro), true);
+                if (model.tmp_fam != null) model.tmp_fam = (TextMeshProUGUI)EditorGUILayout.ObjectField("Display", model.tmp_fam, typeof(TextMeshProUGUI), true);
                 else GUILayout.Label("     Display Not Provided");
                 EditorGUILayout.EndHorizontal();
             }
