@@ -171,6 +171,7 @@ public class Information : MonoBehaviour
                     model = Instantiate(myprefab, new Vector3(0.0f, 0.02f, 0.0f), Quaternion.identity); //Assets/Prefabs/NameTag.prefab
                     model.GetComponent<Plant>().rend = model.GetComponent<MeshRenderer>();
                     model.GetComponent<Plant>().canvasUI = canvasUI;
+                    model.GetComponent<LockModel>().canvasUI = canvasUI;
 
                     // Transfer Information
                     model.GetComponent<Plant>().comName = comName;

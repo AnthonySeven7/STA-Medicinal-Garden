@@ -21,10 +21,13 @@ public class Plant : MonoBehaviour
     public string description = null;
     public string moleAname = null;
     public string moleAclass = null;
+    public string moleAlink = null;
     public string moleBname = null;
     public string moleBclass = null;
+    public string moleBlink = null;
     public string moleCname = null;
     public string moleCclass = null;
+    public string moleClink = null;
     public string medicinal = null;
     public int toxicity = -1;
     public int hardiness = 1;
@@ -34,6 +37,14 @@ public class Plant : MonoBehaviour
     public TextMeshProUGUI tmp_sciName = null;
     public TextMeshProUGUI tmp_fam = null;
     public TextMeshProUGUI tmp_description = null;
+    public TextMeshProUGUI tmp_moleAname = null;
+    public TextMeshProUGUI tmp_moleAclass = null;
+    public TextMeshProUGUI tmp_moleBname = null;
+    public TextMeshProUGUI tmp_moleBclass = null;
+    public TextMeshProUGUI tmp_moleCname = null;
+    public TextMeshProUGUI tmp_moleCclass = null;
+
+    public GameObject background = null;
 
     // A list of all the current buttons on the GUI
     public List<string> buttons;
@@ -50,6 +61,13 @@ public class Plant : MonoBehaviour
         tmp_sciName = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Scientific Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_fam = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Family Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_description = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Description").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleAname = canvasUI.transform.Find("Screens").Find("MoleA").GetChild(0).GetChild(0).Find("Mole A Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleAclass = canvasUI.transform.Find("Screens").Find("MoleA").GetChild(0).GetChild(0).Find("Mole A Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleBname = canvasUI.transform.Find("Screens").Find("MoleB").GetChild(0).GetChild(0).Find("Mole B Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleBclass = canvasUI.transform.Find("Screens").Find("MoleB").GetChild(0).GetChild(0).Find("Mole B Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleCname = canvasUI.transform.Find("Screens").Find("MoleC").GetChild(0).GetChild(0).Find("Mole C Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleCclass = canvasUI.transform.Find("Screens").Find("MoleC").GetChild(0).GetChild(0).Find("Mole C Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
+        background = canvasUI.transform.Find("Background").gameObject;
     }
 
     // Update is called once per frame
@@ -59,15 +77,31 @@ public class Plant : MonoBehaviour
         if ((current != rend.enabled) && rend.enabled) Isenabled();
         else if ((current != rend.enabled) && !rend.enabled) Isdisabled();
     }
-    
+
     // If the model is being tracked
     public void Isenabled()
     {
+        string[] test = new string[2];
         //Set all displays to show current plant's information
         tmp_comName.text = "<b>Common Name: </b>" + comName;
         tmp_sciName.text = "<b>Scientific Name: </b><i>" + sciName + "</i>";
         tmp_fam.text = "<b>Family Name: </b>" + family;
         tmp_description.text = "<b>Description: </b>" + description;
+        test = link(moleAclass);
+        tmp_moleAname.text = "<b>Mole A Name: </b>" + moleAname;
+        if (test[1] != "") tmp_moleAclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";
+        else tmp_moleAclass.text = "<b>Class Name: </b>" + test[0];
+        tmp_moleAclass.transform.parent.GetComponent<ClickableText>().link = test[1];
+        test = link(moleBclass);
+        tmp_moleBname.text = "<b>Mole B Name: </b>" + moleBname;
+        if (test[1] != "") tmp_moleBclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";
+        else tmp_moleBclass.text = "<b>Class Name: </b>" + test[0];
+        tmp_moleBclass.transform.parent.GetComponent<ClickableText>().link = test[1];
+        test = link(moleCclass);
+        tmp_moleCname.text = "<b>Mole C Name: </b>" + moleCname;
+        if (test[1] != "") tmp_moleCclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";
+        else tmp_moleCclass.text = "<b>Class Name: </b>" + test[0];
+        tmp_moleCclass.transform.parent.GetComponent<ClickableText>().link = test[1];
         GUIEnabled();
         current = true; // Update current state
     }
@@ -80,6 +114,12 @@ public class Plant : MonoBehaviour
         tmp_sciName.text = "<b>Scientific Name: </b>";
         tmp_fam.text = "<b>Family Name: </b>";
         tmp_description.text = "<b>Description: </b>";
+        tmp_moleAname.text = "<b>Mole A Name: </b>";
+        tmp_moleAclass.text = "<b>Class Name: </b>";
+        tmp_moleBname.text = "<b>Mole B Name: </b>";
+        tmp_moleBclass.text = "<b>Class Name: </b>";
+        tmp_moleCname.text = "<b>Mole C Name: </b>";
+        tmp_moleCclass.text = "<b>Class Name: </b>";
         GUIDisabled();
         current = false; // Update current state
     }
@@ -135,6 +175,25 @@ public class Plant : MonoBehaviour
                 button.gameObject.SetActive(false);
             }
         }
+        foreach (Transform canvas in canvasUI.transform.Find("Screens").transform)
+        {
+            if (canvas.name != "OptionsPanel") canvas.gameObject.SetActive(false);
+        }
+        if (background != null) background.SetActive(false);
+    }
+
+    public string[] link(string name)
+    {
+        bool check = false;
+        string[] title = new string[2];
+        title[0] = "";
+        title[1] = "";
+        foreach (char ch in name)
+        {
+            if (ch == '[' || ch == ']') check = !check;
+            else title[check ? 1 : 0] += ch;
+        }
+        return title;
     }
 }
 
