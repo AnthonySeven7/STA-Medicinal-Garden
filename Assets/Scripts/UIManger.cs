@@ -6,23 +6,74 @@ using DG.Tweening;
 
 public class UIManger : MonoBehaviour
 {
-    public RectTransform generalInfo, background;
-    private float genInfo_y;
+    public GameObject  gen, molA, molB, molC, more, bkg1, bkg2;
+    private RectTransform gen_Rect, molA_Rect, molB_Rect, molC_Rect, more_Rect, bkg1_Rect, bkg2_Rect, sel_Rect, sel_bkg_Rect;
+    public string activePanel;
+    private float panel_up, panel_down;
+
     // Start is called before the first frame update
     void Start()
     {
-        genInfo_y = generalInfo.transform.position.y;
-        Debug.Log(genInfo_y);
+        panel_up = 0.0f;
+        panel_down = -730;
+        activePanel = "";
+        gen_Rect = gen.GetComponent<RectTransform>();
+        molA_Rect = molA.GetComponent<RectTransform>();
+        molB_Rect = molB.GetComponent<RectTransform>();
+        molC_Rect = molC.GetComponent<RectTransform>();
+        more_Rect = more.GetComponent<RectTransform>();
+        bkg1_Rect = bkg1.GetComponent<RectTransform>();
+        bkg2_Rect = bkg2.GetComponent<RectTransform>();
+        sel_bkg_Rect = bkg1_Rect;
     }
 
     public void GeneralInfoButton()
     {
-        var x = 0.0f;
-        if (generalInfo.transform.position.y == 530.0f)
+        CheckPanel(gen_Rect, "gen_info");
+    }
+
+    public void MoleAButton()
+    {
+        CheckPanel(molA_Rect, "moleA");
+    }
+
+    public void MoleBButton()
+    {
+        CheckPanel(molB_Rect, "moleB");
+    }
+
+    public void MoleCButton()
+    {
+        CheckPanel(molC_Rect, "moleC");
+    }
+
+    public void MoreButton()
+    {
+        CheckPanel(more_Rect, "more");
+    }
+
+    public void CheckPanel(RectTransform pointer, string name)
+    {
+        var delay = 0.25f;
+        if (activePanel != "")
         {
-            x = genInfo_y;
+            if (sel_Rect != null) sel_Rect.DOAnchorPos(new Vector2(0, panel_down), 0.25f).SetDelay(delay);
+            sel_bkg_Rect.DOAnchorPos(new Vector2(0, panel_down), 0.25f).SetDelay(delay);
+            delay = 0.5f;
+            if (sel_bkg_Rect == bkg1_Rect) sel_bkg_Rect = bkg2_Rect;
+            else sel_bkg_Rect = bkg1_Rect;
         }
-        generalInfo.DOAnchorPos(new Vector2(0, x), 0.25f).SetDelay(0.25f);
-        background.DOAnchorPos(new Vector2(0, x), 0.25f).SetDelay(0.25f);
+        if (activePanel != name)
+        {
+            sel_Rect = pointer;
+            sel_Rect.DOAnchorPos(new Vector2(0, panel_up), 0.25f).SetDelay(delay);
+            sel_bkg_Rect.DOAnchorPos(new Vector2(0, panel_up), 0.25f).SetDelay(delay);
+            activePanel = name;
+        }
+        else
+        {
+            sel_Rect = null;
+            activePanel = "";
+        }
     }
 }

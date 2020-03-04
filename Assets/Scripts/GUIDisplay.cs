@@ -31,10 +31,10 @@ public class GUIDisplay : MonoBehaviour
             this.GetComponentInChildren<TextMeshProUGUI>().text = Buttontext; // Reset button text
             if (Buttontext.Length >= 10) this.GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Baseline;
             else this.GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
-            if (connectedDisplay != null) connectedDisplay.SetActive(false); // Close the affiliated display [TO BE CHANGED LATER W/ ANIMATIONS]
+            //if (connectedDisplay != null) connectedDisplay.SetActive(false); // Close the affiliated display [TO BE CHANGED LATER W/ ANIMATIONS]
             this.GetComponent<Image>().color = Button_color_normal; // Change the button color back to normal
             displayActive = false;
-            if (connectedDisplay != null) background.SetActive(false);
+            //if (connectedDisplay != null) background.SetActive(false);
             if (ARCamera.enabled == false)
             {
                 ARCamera.enabled = true;
@@ -64,7 +64,7 @@ public class GUIDisplay : MonoBehaviour
     public void close()
     {
         this.GetComponentInChildren<TextMeshProUGUI>().text = Buttontext; // Reset button text
-        if (connectedDisplay != null && connectedDisplay.name != "OptionsPanel") connectedDisplay.SetActive(false); // Close the affiliated display [TO BE CHANGED LATER W/ ANIMATIONS]
+        //if (connectedDisplay != null && connectedDisplay.name != "OptionsPanel") connectedDisplay.SetActive(false); // Close the affiliated display [TO BE CHANGED LATER W/ ANIMATIONS]
         this.GetComponent<Image>().color = Button_color_normal; // Change the button color back to normal
         displayActive = false;
     }
