@@ -6,8 +6,6 @@ using TMPro;
 
 public class GUIDisplay : MonoBehaviour
 {
-    public Camera ARCamera;
-    public Camera SecondCamera;
     public GameObject background;
     public GameObject connectedDisplay = null;
     public string Buttontext;
@@ -17,29 +15,21 @@ public class GUIDisplay : MonoBehaviour
     
     void Start()
     {
-        ARCamera = Camera.main;
         Buttontext = this.GetComponentInChildren<TextMeshProUGUI>().text;
         this.GetComponent<Image>().color = Button_color_normal;
         if (Buttontext.Length >= 10) this.GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Baseline;
         else this.GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
     }
 
-    public void onClick() // [TO BE EDITED]
+    public void onClick()
     {
         if (displayActive) // If button has already been clicked and display is active
         {
             this.GetComponentInChildren<TextMeshProUGUI>().text = Buttontext; // Reset button text
             if (Buttontext.Length >= 10) this.GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Baseline;
             else this.GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
-            //if (connectedDisplay != null) connectedDisplay.SetActive(false); // Close the affiliated display [TO BE CHANGED LATER W/ ANIMATIONS]
             this.GetComponent<Image>().color = Button_color_normal; // Change the button color back to normal
             displayActive = false;
-            //if (connectedDisplay != null) background.SetActive(false);
-            if (ARCamera.enabled == false)
-            {
-                ARCamera.enabled = true;
-                SecondCamera.enabled = false;
-            }
         }
         else
         {
@@ -51,11 +41,6 @@ public class GUIDisplay : MonoBehaviour
             if (connectedDisplay != null)
             {
                 connectedDisplay.SetActive(true);
-                if (connectedDisplay.name == "OptionsPanel")
-                {
-                    SecondCamera.enabled = true;
-                    ARCamera.enabled = false;
-                }
                 displayActive = true;
             }
         }
@@ -64,17 +49,16 @@ public class GUIDisplay : MonoBehaviour
     public void close()
     {
         this.GetComponentInChildren<TextMeshProUGUI>().text = Buttontext; // Reset button text
-        //if (connectedDisplay != null && connectedDisplay.name != "OptionsPanel") connectedDisplay.SetActive(false); // Close the affiliated display [TO BE CHANGED LATER W/ ANIMATIONS]
         this.GetComponent<Image>().color = Button_color_normal; // Change the button color back to normal
         displayActive = false;
     }
 
-    void cleanUp()
+    public void cleanUp()
     {
         Debug.Log(this.transform.parent.transform);
         foreach(Transform child in this.transform.parent.transform)
         {
-            if (child.GetComponent<GUIDisplay>().displayActive) child.GetComponent<GUIDisplay>().close();
+            if (child.GetComponent<GUIDisplay>() != null && child.GetComponent<GUIDisplay>().displayActive) child.GetComponent<GUIDisplay>().close();
         }
     }
 }

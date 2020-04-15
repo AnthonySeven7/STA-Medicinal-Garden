@@ -44,7 +44,7 @@ public class Plant : MonoBehaviour
     public TextMeshProUGUI tmp_moleCname = null;
     public TextMeshProUGUI tmp_moleCclass = null;
 
-    public GameObject background = null;
+    //public GameObject background = null;
 
     // A list of all the current buttons on the GUI
     public List<string> buttons;
@@ -67,7 +67,7 @@ public class Plant : MonoBehaviour
         tmp_moleBclass = canvasUI.transform.Find("Screens").Find("MoleB").GetChild(0).GetChild(0).Find("Mole B Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleCname = canvasUI.transform.Find("Screens").Find("MoleC").GetChild(0).GetChild(0).Find("Mole C Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleCclass = canvasUI.transform.Find("Screens").Find("MoleC").GetChild(0).GetChild(0).Find("Mole C Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
-        background = canvasUI.transform.Find("Background").gameObject;
+        //background = canvasUI.transform.Find("Background").gameObject;
     }
 
     // Update is called once per frame
@@ -128,7 +128,7 @@ public class Plant : MonoBehaviour
     {
         int count = 0;
         int totalButtons = 0;
-        buttons.Add("Options_Button");
+        //buttons.Add("Options_Button");
         buttons = new List<string>();
         if ((comName != null && comName != "") || (sciName != null && sciName != "") || (family != null && family != "") || (description != null && description != ""))
         {
@@ -158,28 +158,28 @@ public class Plant : MonoBehaviour
         foreach(string button in buttons) // [Change later for animations]
         {
             GameObject currButton = canvasUI.transform.Find("MainPanel").Find(button).gameObject;
-            currButton.SetActive(true);
-            currButton.transform.position = new Vector3((float)(540-(106*(totalButtons-1))+(206*count)), 0.0f, 0.0f);
+            currButton.transform.position = new Vector3((float)(540 - (106 * (totalButtons - 1)) + (206 * count)), 0.0f, 0.0f);
             count++;
+            currButton.GetComponent<Animator>().Play("ButtonUp_anim");
         }
+        canvasUI.transform.Find("ToggleLock").gameObject.SetActive(true);
     }
 
     public void GUIDisabled()
     {
         foreach (Transform button in canvasUI.transform.Find("MainPanel").transform)
         {
-            if (button.name != "Options_Button")
+            if (button.name != "Options_Button" && button.transform.position.y > -100)
             {
                 button.GetComponentInChildren<TextMeshProUGUI>().text = button.GetComponent<GUIDisplay>().Buttontext;
                 button.GetComponent<Image>().color = button.GetComponent<GUIDisplay>().Button_color_normal;
-                button.gameObject.SetActive(false);
+                button.GetComponent<Animator>().Play("ButtonDown_anim");
             }
         }
-        foreach (Transform canvas in canvasUI.transform.Find("Screens").transform)
-        {
-            if (canvas.name != "OptionsPanel") canvas.gameObject.SetActive(false);
-        }
-        if (background != null) background.SetActive(false);
+        canvasUI.transform.Find("ToggleLock").GetComponent<SwitchSprite>().cleanUp();
+        canvasUI.transform.Find("ToggleLock").gameObject.SetActive(false);
+        canvasUI.transform.Find("UIManager").GetComponent<UIManager>().cleanUp();
+        canvasUI.transform.Find("MainPanel").GetChild(0).GetComponent<GUIDisplay>().cleanUp();
     }
 
     public string[] link(string name)
