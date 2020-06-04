@@ -55,7 +55,6 @@ public class GUIDisplay : MonoBehaviour
 
     public void cleanUp()
     {
-        Debug.Log(this.transform.parent.transform);
         foreach(Transform child in this.transform.parent.transform)
         {
             if (child.GetComponent<GUIDisplay>() != null && child.GetComponent<GUIDisplay>().displayActive) child.GetComponent<GUIDisplay>().close();

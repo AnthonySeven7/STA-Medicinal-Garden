@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/sunflowerScene.unity
+    path: Assets/_Project/Scenes/sunflowerScene.unity
     guid: b9437c129fad35e4f9281c402397f58e
   m_configObjects: {}

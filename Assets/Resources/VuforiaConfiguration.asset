@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: VuforiaConfiguration
   m_EditorClassIdentifier: 
   vuforia:
-    vuforiaLicenseKey: Ab6EJnD/////AAABmTWAIbG2QEaNqsb00UYIaa6Ao76LBgO3peQpB6LuapQP+hQEBJmKvwzc77xf/kaILClJXOFzuJOOU394KL6JcOuS53cvZJXszmcC4WVo2m+olvJ3XFWIQX+2OoMdcNrf2ZFH9cVq45ZtnfURRN08wssKx8Ub4LNlV2N+87fVgvp6rOxQvspng143DaCYUaPtoH9+72aktvYqAa8IGBbJslSJcMtcOSlbjY3s0+wU9NHDICDseFCJ+vixNZo/Qp1BH6MjqNamdpCQj9Xr3BQuWJvHCbIQJ5D+WINzz+MoWfMQ4aJy03mYkn2xHpOVxE80+EDSYxM9PoQ2+pbDFZ0Rl1awA5WktZQ9nMc+lk6YVPcf
-    ufoLicenseKey: QVhiM0Y1Ly8vLy8vQUFBQUtPbnFIeHJFSGs1N3VrMlg4U050eVBzK2pkOFZxMDhrazlwYjBsYS9aZUIxQlV1ckZWcWt0ZllSQWpnT2tIRlY2VzdOMDRTRjNYRUhmbTF5L1BnYlB4eWdHWEF6RUNheXowc3dyNVNYa2ozdERuRjhka1FpOHRscHdkMDcrcEJEY1FjTjNJcUM1bEgwOTYzQkdZdjRsQStRb0hSQU9nRGthelp5TlY0WHVwWU9EaE05NWw5bXAzbnBDMjM5MWZBWXBFdEdiL2loTDNab3N4b25ZblhjK1JtSS9wLzRoTDIwVGhmTXR6WFJNYkpUTXZLZzJoQ0N0TEJXNEptZ0pSOUtSdStzQWM3QjVNOWFFMGVHQ1dUT1VRSUUweEpiZC9ZL2cvS29iNDhBRXdQOGFwbWR5NmRWU0FHU2psVzRZY2FEU2Zud3J1ZHhucVNmSUZiajNTUnIzM0lKVlFIaW1rL0oyOGNFeDdyekcySXg=
+    vuforiaLicenseKey: 
+    ufoLicenseKey: QVZqcWgwVC8vLy8vQUFBQUtJMTNmWXp3ZEVRdXY3ZzV3YzVsUCtLRHBkY1c0Ynd4RVZxOVNLOUYzbnVMQVhCZHQzdllaU1hqYzI0NU5EU0tiVVIzNnVQaG03TExtOWhGT1VkSHJicmxQbi9yaGpiZU5VOVlpdEtJd0RwM3cxNjlVV1hHT0RLN2VlUXByVkM2eGdGN2VUMEZudmhwOHpEdVp2cTlWbDd3dk9BN0JjWUFyYXNSZ3JpeVZBUXJlRGNORVFvR2dWZ1EvVjVYT0wrYm41d0hkR0NwSjdJUHVNcHptVlV0YjJ1c290Z0pOa2VJaUpRa29kdVV5ZThPL1VtazltS1oxcERHUTRLaE9iak9ONnpVNlBrbVA2aytvK2VhN0FEYWVmYzBiS09FQmNNWkZLaW1hcS93NEorNnE1UmFqWUdsd09aVjF6emE3M3NBMk9qUUlXdkhmMGZkY3YzOUlkaEJBaTdPS1R2T29XQ1lwMVZCUmRycm1EOWU=
     delayedInitialization: 0
     cameraDeviceModeSetting: -1
     maxSimultaneousImageTargets: 1
     maxSimultaneousObjectTargets: 1
-    useDelayedLoadingObjectTargets: 1
+    useDelayedLoadingObjectTargets: 0
     modelTargetRecoWhileExtendedTracked: 1
     version: 8.3.8
     eulaAcceptedVersions: '{"Values":["8.3"]}'
@@ -56,7 +56,7 @@ MonoBehaviour:
   deviceTracker:
     autoInitTracker: 0
     autoStartTracker: 0
-    arcoreRequirement: 1
+    arcoreRequirement: 0
     trackingMode: 1
     posePrediction: 0
     modelCorrectionMode: 0

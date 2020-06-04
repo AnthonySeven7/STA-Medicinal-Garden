@@ -158,7 +158,7 @@ public class Plant : MonoBehaviour
         foreach(string button in buttons) // [Change later for animations]
         {
             GameObject currButton = canvasUI.transform.Find("MainPanel").Find(button).gameObject;
-            currButton.transform.position = new Vector3((float)(540 - (106 * (totalButtons - 1)) + (206 * count)), 0.0f, 0.0f);
+            currButton.transform.position = new Vector3((float)((540) - (106 * (totalButtons - 1)) + (220 * count)), 0.0f, 0.0f);
             count++;
             currButton.GetComponent<Animator>().Play("ButtonUp_anim");
         }
