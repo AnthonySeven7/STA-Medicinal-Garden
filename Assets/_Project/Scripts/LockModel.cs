@@ -20,16 +20,16 @@ public class LockModel : MonoBehaviour
 
     void Update()
     {
-        if (this.gameObject.GetComponent<MeshRenderer>().enabled)
+        if (gameObject.GetComponent<MeshRenderer>().enabled)
         {
             lockModel = (canvasUI.transform.Find("ToggleLock").GetComponent<Toggle>().isOn);
             if (!lockModel)
             {
-                pos_x = ((2 * (this.transform.parent.position.x)) / 3);
-                pos_y = ((2 * (this.transform.parent.position.y)) / 3);
-                pos_z = ((2 * (this.transform.parent.position.z)) / 3);
-                this.transform.position = new Vector3(pos_x, pos_y, pos_z);
-                this.transform.localScale = new Vector3(this.transform.parent.position.z, this.transform.parent.position.z, this.transform.parent.position.z);
+                pos_x = ((2 * (transform.parent.position.x)) / 3);
+                pos_y = ((2 * (transform.parent.position.y)) / 3);
+                pos_z = ((2 * (transform.parent.position.z)) / 3);
+                transform.position = new Vector3(pos_x, pos_y, pos_z);
+                transform.localScale = new Vector3(transform.parent.position.z, transform.parent.position.z, transform.parent.position.z);
             }
         }
     }

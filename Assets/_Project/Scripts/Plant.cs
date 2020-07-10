@@ -7,109 +7,155 @@ using UnityEditor;
 #endif
 using TMPro;
 
+/// <summary>
+/// A system to store and display information about a specific plant
+/// 
+/// [Information stored in this script is provided by the script 'Information.cs']
+/// This script stores information about a specific plant and is called upon when that specific plant is recognized by the Vuforia system.
+/// Displaying the stored information to the designated location on the GUI when the specific object is being tracked and resets the display back
+/// to default values, once the object's tracking has been lost, for future tracking.
+/// </summary>
+//[RequireComponent(typeof())]
 public class Plant : MonoBehaviour
 {
+    #region VARIABLES
     // Initialize Variables
     public Canvas canvasUI;
     public MeshRenderer rend;
 
-    // Information from the plant
-    public string comName = null;
-    public string sciName = null;
-    public string family = null;
+    // Information for the plant
+    public string comName, sciName, family, moleAname, moleAclass, moleAlink, moleBname, moleBclass, moleBlink, moleCname, moleCclass, moleClink, medicinal;
+    public GameObject plantModel, moleAmodel, moleBmodel, moleCmodel;
     [Multiline]
     public string description = null;
-    public string moleAname = null;
-    public string moleAclass = null;
-    public string moleAlink = null;
-    public string moleBname = null;
-    public string moleBclass = null;
-    public string moleBlink = null;
-    public string moleCname = null;
-    public string moleCclass = null;
-    public string moleClink = null;
-    public string medicinal = null;
     public int toxicity = -1;
-    public int hardiness = 1;
+    public int[] hardiness = new int[2] { -1, -1 };
+    public string[] links;
 
-    // Locations where information is being displayed
-    public TextMeshProUGUI tmp_comName = null;
-    public TextMeshProUGUI tmp_sciName = null;
-    public TextMeshProUGUI tmp_fam = null;
-    public TextMeshProUGUI tmp_description = null;
-    public TextMeshProUGUI tmp_moleAname = null;
-    public TextMeshProUGUI tmp_moleAclass = null;
-    public TextMeshProUGUI tmp_moleBname = null;
-    public TextMeshProUGUI tmp_moleBclass = null;
-    public TextMeshProUGUI tmp_moleCname = null;
-    public TextMeshProUGUI tmp_moleCclass = null;
+    // Locations where the information is displayed
+    public TextMeshProUGUI tmp_comName, tmp_sciName, tmp_fam, tmp_description, tmp_moleAname, tmp_moleAclass, tmp_moleBname, tmp_moleBclass, tmp_moleCname, tmp_moleCclass;
+    public GameObject[] hardinessImages = new GameObject[14];
 
-    //public GameObject background = null;
-
-    // A list of all the current buttons on the GUI
+    // List of all current buttons in GUI
     public List<string> buttons;
     
     // Test variable to prevent overlooping
-    private bool current = true;   
+    private bool current = true;
 
+    #endregion // VARIABLES
+
+    #region UNITY_MONOBEHAVIOUR_METHODS
     // Start is called before the first frame update
     void Start()
     {
-
-        rend = this.GetComponent<MeshRenderer>();
-        tmp_comName = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Common Name").gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_sciName = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Scientific Name").gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_fam = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Family Name").gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_description = canvasUI.transform.Find("Screens").Find("GeneralInfo").GetChild(0).GetChild(0).Find("Description").gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_moleAname = canvasUI.transform.Find("Screens").Find("MoleA").GetChild(0).GetChild(0).Find("Mole A Name").gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_moleAclass = canvasUI.transform.Find("Screens").Find("MoleA").GetChild(0).GetChild(0).Find("Mole A Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_moleBname = canvasUI.transform.Find("Screens").Find("MoleB").GetChild(0).GetChild(0).Find("Mole B Name").gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_moleBclass = canvasUI.transform.Find("Screens").Find("MoleB").GetChild(0).GetChild(0).Find("Mole B Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_moleCname = canvasUI.transform.Find("Screens").Find("MoleC").GetChild(0).GetChild(0).Find("Mole C Name").gameObject.GetComponent<TextMeshProUGUI>();
-        tmp_moleCclass = canvasUI.transform.Find("Screens").Find("MoleC").GetChild(0).GetChild(0).Find("Mole C Class").GetChild(0).gameObject.GetComponent<TextMeshProUGUI>();
-        //background = canvasUI.transform.Find("Background").gameObject;
+        // Assign Variables On Start
+        rend = GetComponent<MeshRenderer>();
+        tmp_comName = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Common Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_sciName = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Scientific Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_fam = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Family Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_description = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Description").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleAname = canvasUI.transform.Find("Screens").Find("MoleA").Find("Viewport").Find("Content").Find("Mole A Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleAclass = canvasUI.transform.Find("Screens").Find("MoleA").Find("Viewport").Find("Content").Find("Mole A Class").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleBname = canvasUI.transform.Find("Screens").Find("MoleB").Find("Viewport").Find("Content").Find("Mole B Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleBclass = canvasUI.transform.Find("Screens").Find("MoleB").Find("Viewport").Find("Content").Find("Mole B Class").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleCname = canvasUI.transform.Find("Screens").Find("MoleC").Find("Viewport").Find("Content").Find("Mole C Name").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_moleCclass = canvasUI.transform.Find("Screens").Find("MoleC").Find("Viewport").Find("Content").Find("Mole C Class").gameObject.GetComponent<TextMeshProUGUI>();
+        var x = 0;
+        foreach (Transform child in canvasUI.transform.Find("Screens").Find("MoreInfo").Find("Viewport").Find("Content").Find("HardinessMaps"))
+        {
+            if (x != 0) hardinessImages[x - 1] = child.gameObject;
+            x++;
+        }
+        if (plantModel != null) plantModel = CreateModel(plantModel, "Plant Model : " + comName);
+        if (moleAmodel != null) moleAmodel = CreateModel(moleAmodel, "Mole A Model : " + moleAname);
+        if (moleBmodel != null) moleBmodel = CreateModel(moleBmodel, "Mole B Model : " + moleBname);
+        if (moleCmodel != null) moleCmodel = CreateModel(moleCmodel, "Mole C Model : " + moleCname);
     }
 
     // Update is called once per frame
     void Update()
     {
-        // Check if current state does not equal desired state
-        if ((current != rend.enabled) && rend.enabled) Isenabled();
-        else if ((current != rend.enabled) && !rend.enabled) Isdisabled();
+        if (gameObject.name != "FontSize")
+        {
+            // Check if current state does not equal desired state
+            if (rend.enabled) DisplayModel(canvasUI.transform.Find("UIManager").GetComponent<UIManager>().activePanel);
+            if ((current != rend.enabled) && rend.enabled) Isenabled();
+            else if ((current != rend.enabled) && !rend.enabled) Isdisabled();
+        }
     }
+    #endregion // UNITY_MONOBEHAVIOUR_METHODS
 
-    // If the model is being tracked
+    #region PUBLIC_METHODS
+    // If Model Is Being Tracked
     public void Isenabled()
     {
-        string[] test = new string[2];
-        //Set all displays to show current plant's information
+        // Set all displays to show current plant's information
         tmp_comName.text = "<b>Common Name: </b>" + comName;
         tmp_sciName.text = "<b>Scientific Name: </b><i>" + sciName + "</i>";
         tmp_fam.text = "<b>Family Name: </b>" + family;
         tmp_description.text = "<b>Description: </b>" + description;
-        test = link(moleAclass);
+        
+        string[] test = Link(moleAclass); // check to see if moleAclass has a link attached to it
         tmp_moleAname.text = "<b>Mole A Name: </b>" + moleAname;
-        if (test[1] != "") tmp_moleAclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";
-        else tmp_moleAclass.text = "<b>Class Name: </b>" + test[0];
-        tmp_moleAclass.transform.parent.GetComponent<ClickableText>().link = test[1];
-        test = link(moleBclass);
-        tmp_moleBname.text = "<b>Mole B Name: </b>" + moleBname;
-        if (test[1] != "") tmp_moleBclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";
-        else tmp_moleBclass.text = "<b>Class Name: </b>" + test[0];
-        tmp_moleBclass.transform.parent.GetComponent<ClickableText>().link = test[1];
-        test = link(moleCclass);
+        if (test[1] != "") tmp_moleAclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";// if a link is found then indicate hyperlink by making text blue and underlined
+        else tmp_moleAclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
+        tmp_moleAclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
+        
+        test = Link(moleBclass); // check to see if moleBclass has a link attached to it
+        tmp_moleBname.text = "<b>Mole B Name: </b>" + moleBname; 
+        if (test[1] != "") tmp_moleBclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";// if a link is found then indicate hyperlink by making text blue and underlined
+        else tmp_moleBclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
+        tmp_moleBclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
+        
+        test = Link(moleCclass); // check to see if moleCclass has a link attached to it
         tmp_moleCname.text = "<b>Mole C Name: </b>" + moleCname;
-        if (test[1] != "") tmp_moleCclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";
-        else tmp_moleCclass.text = "<b>Class Name: </b>" + test[0];
-        tmp_moleCclass.transform.parent.GetComponent<ClickableText>().link = test[1];
+        if (test[1] != "") tmp_moleCclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>"; // if a link is found then indicate hyperlink by making text blue and underlined
+        else tmp_moleCclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
+        tmp_moleCclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
+        
+        // Only display hardiness maps related to current plant
+        var temp = hardiness[0];
+        if (temp > 0)
+        {
+            while (temp <= hardiness[1])
+            {
+                hardinessImages[temp - 1].SetActive(true);
+                temp++;
+            }
+        }
+            hardinessImages[13].SetActive(true);
         GUIEnabled();
-        current = true; // Update current state
+        current = true; // update current state
     }
 
-    // If the model is not being tracked
-    public void Isdisabled()
+    // Display a particular model from the plant
+    public void DisplayModel(string str)
     {
-        // Set all displays to their default messages
+        if (plantModel != null && str == "plant") plantModel.GetComponent<MeshRenderer>().enabled = true;
+        else if (plantModel != null) plantModel.GetComponent<MeshRenderer>().enabled = false;
+        if (moleAmodel != null && str == "moleA") moleAmodel.GetComponent<MeshRenderer>().enabled = true;
+        else if (moleAmodel != null) moleAmodel.GetComponent<MeshRenderer>().enabled = false;
+        if (moleBmodel != null && str == "moleB") moleBmodel.GetComponent<MeshRenderer>().enabled = true;
+        else if (moleBmodel != null) moleBmodel.GetComponent<MeshRenderer>().enabled = false;
+        if (moleCmodel != null && str == "moleC") moleCmodel.GetComponent<MeshRenderer>().enabled = true;
+        else if (moleCmodel != null) moleCmodel.GetComponent<MeshRenderer>().enabled = false;
+    }
+    #endregion // PUBLIC_METHODS
+
+    #region PRIVATE_METHODS
+    private GameObject CreateModel(GameObject obj, string str)
+    {
+        obj = Instantiate(obj, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+        obj.transform.parent = transform;
+        obj.transform.localPosition = Vector3.zero;
+        obj.name = str;
+        obj.GetComponent<LockModel>().canvasUI = canvasUI;
+        return obj;
+    }
+    // If Model Is Not Begin Tracked
+    private void Isdisabled()
+    {
+        // set all displays to default messages
         tmp_comName.text = "<b>Common Name: </b>";
         tmp_sciName.text = "<b>Scientific Name: </b>";
         tmp_fam.text = "<b>Family Name: </b>";
@@ -120,52 +166,62 @@ public class Plant : MonoBehaviour
         tmp_moleBclass.text = "<b>Class Name: </b>";
         tmp_moleCname.text = "<b>Mole C Name: </b>";
         tmp_moleCclass.text = "<b>Class Name: </b>";
+        foreach(GameObject obj in hardinessImages)
+        {
+            obj.SetActive(false);
+        }
+        DisplayModel("");
         GUIDisabled();
-        current = false; // Update current state
+        current = false; // update current state
     }
 
-    public void GUIEnabled()
+    // When Model Is Being Tracked
+    private void GUIEnabled()
     {
         int count = 0;
         int totalButtons = 0;
-        //buttons.Add("Options_Button");
         buttons = new List<string>();
+        // Check for general information
         if ((comName != null && comName != "") || (sciName != null && sciName != "") || (family != null && family != "") || (description != null && description != ""))
         {
             buttons.Add("GeneralInfo_Button");
             totalButtons++;
         }
+        // Check for molecule A
         if (moleAname != null && moleAclass != null && moleAname != "" && moleAclass != "")
         {
             buttons.Add("MoleA_Button");
             totalButtons++;
         }
+        // Check for molecule B
         if (moleBname != null && moleBclass != null && moleBname != "" && moleBclass != "")
         {
             buttons.Add("MoleB_Button");
             totalButtons++;
         }
+        // Check for molecule C
         if (moleCname != null && moleCclass != null && moleCname != "" && moleCclass != "")
         {
             buttons.Add("MoleC_Button");
             totalButtons++;
         }
-        if (toxicity != 0 || hardiness != 0)
+        // Check for more information
+        if (toxicity != 0 || hardiness[0] != -1)
         {
             buttons.Add("MoreInfo_Button");
             totalButtons++;
         }
-        foreach(string button in buttons) // [Change later for animations]
+        foreach(string button in buttons)
         {
             GameObject currButton = canvasUI.transform.Find("MainPanel").Find(button).gameObject;
-            currButton.transform.position = new Vector3((float)((540) - (106 * (totalButtons - 1)) + (220 * count)), 0.0f, 0.0f);
+            currButton.transform.localPosition = new Vector3((0 + ((-80) * (totalButtons-1)) + (160 * count)), 0.0f, 0.0f);
             count++;
             currButton.GetComponent<Animator>().Play("ButtonUp_anim");
         }
         canvasUI.transform.Find("ToggleLock").gameObject.SetActive(true);
     }
 
-    public void GUIDisabled()
+    private void GUIDisabled()
     {
         foreach (Transform button in canvasUI.transform.Find("MainPanel").transform)
         {
@@ -178,16 +234,17 @@ public class Plant : MonoBehaviour
         }
         canvasUI.transform.Find("ToggleLock").GetComponent<SwitchSprite>().cleanUp();
         canvasUI.transform.Find("ToggleLock").gameObject.SetActive(false);
-        canvasUI.transform.Find("UIManager").GetComponent<UIManager>().cleanUp();
-        canvasUI.transform.Find("MainPanel").GetChild(0).GetComponent<GUIDisplay>().cleanUp();
+        canvasUI.transform.Find("UIManager").GetComponent<UIManager>().CleanUp();
+        canvasUI.transform.Find("MainPanel").GetChild(0).GetComponent<GUIDisplay>().CleanUp();
     }
 
-    public string[] link(string name)
+    private string[] Link(string name)
     {
+        // break a string into two components the text to be shown and the website URL to be navigated to once clicked
         bool check = false;
         string[] title = new string[2];
-        title[0] = "";
-        title[1] = "";
+        title[0] = ""; // text to be displayed for the hyperlink
+        title[1] = ""; // URL destination once clicked
         foreach (char ch in name)
         {
             if (ch == '[' || ch == ']') check = !check;
@@ -195,8 +252,10 @@ public class Plant : MonoBehaviour
         }
         return title;
     }
+    #endregion // PRIVATE_METHODS
 }
 
+#region DISPLAY_EDITOR
 #if UNITY_EDITOR
 // Edit the look of the code in the inspector
 [CustomEditor (typeof(Plant))]
@@ -226,6 +285,9 @@ public class PlantEditor : Editor
                 if (model.tmp_comName != null) model.tmp_comName = (TextMeshProUGUI)EditorGUILayout.ObjectField("Display", model.tmp_comName, typeof(TextMeshProUGUI), true);
                 else GUILayout.Label("     Display Not Provided");
                 EditorGUILayout.EndHorizontal();
+                EditorGUIUtility.labelWidth = 70;
+                if (model.plantModel != null) model.plantModel = (GameObject)EditorGUILayout.ObjectField("Plant Model", model.plantModel, typeof(GameObject), true);
+                EditorGUILayout.Space();
             }
 
             // Scientific Name
@@ -270,6 +332,8 @@ public class PlantEditor : Editor
                 EditorGUIUtility.labelWidth = 45;
                 model.moleAclass = EditorGUILayout.TextField("Class", model.moleAclass, GUILayout.MaxWidth(180));
                 EditorGUILayout.EndHorizontal();
+                if (model.moleAmodel != null) model.moleAmodel = (GameObject)EditorGUILayout.ObjectField("Model", model.moleAmodel, typeof(GameObject), true);
+                EditorGUILayout.Space();
             }
             else GUILayout.Label("Molecules: Not Provided");
 
@@ -281,6 +345,8 @@ public class PlantEditor : Editor
                 EditorGUIUtility.labelWidth = 45;
                 model.moleBclass = EditorGUILayout.TextField("Class", model.moleBclass, GUILayout.MaxWidth(180));
                 EditorGUILayout.EndHorizontal();
+                if (model.moleBmodel != null) model.moleBmodel = (GameObject)EditorGUILayout.ObjectField("Model", model.moleBmodel, typeof(GameObject), true);
+                EditorGUILayout.Space();
             }
 
             if (model.moleCname != null && model.moleCclass != null && model.moleCname != "" && model.moleCclass != "")
@@ -291,6 +357,8 @@ public class PlantEditor : Editor
                 EditorGUIUtility.labelWidth = 45;
                 model.moleCclass = EditorGUILayout.TextField("Class", model.moleCclass, GUILayout.MaxWidth(180));
                 EditorGUILayout.EndHorizontal();
+                if (model.moleCmodel != null) model.moleCmodel = (GameObject)EditorGUILayout.ObjectField("Model", model.moleCmodel, typeof(GameObject), true);
+                EditorGUILayout.Space();
             }
 
             // Medicinal
@@ -305,8 +373,16 @@ public class PlantEditor : Editor
             GUILayout.Label("Toxicity: " + model.toxicity);
 
             // Hardiness
-            GUILayout.Label("Hardiness: " + model.hardiness);
+            // if ((model.hardiness[0] >= 0) && (model.hardiness[1] >= 0) && model.hardiness != null) GUILayout.Label("Hardiness: " + model.hardiness[0] + "-" + model.hardiness[1]);
+
+            // Extra Links
+            GUILayout.Label("Extra Links:");
+            for (int i = 0; i < model.links.Length; i++)
+            {
+                GUILayout.Label(model.links[i]);
+            }
         }
     }
 }
 #endif
+#endregion // DISPLAY_EDITOR

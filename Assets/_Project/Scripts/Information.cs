@@ -6,45 +6,62 @@ using System.IO;
 using Vuforia;
 using TMPro;
 
+/// <summary>
+/// A system that imports information from a provided .csv document and creates game objects for each plant in said document
+/// </summary>
 public class Information : MonoBehaviour
 {
+    #region VARIABLES
+    [Header("Data (Hover over variables for descriptions)")]
+    [Tooltip("CSV file that contains all information on the plants.")]
     public TextAsset fileToRead;
-    public string dataSetName = "";
+    [Tooltip("Name of Vuforia Dataset to use.")]
+    public string datasetName = "";
+    [Tooltip("Default prefab that will be displayed on the plaque.")]
+    public GameObject plaquePrefab;
+    [Tooltip("Canvas where all information will be displayed.")]
     public Canvas canvasUI;
-    public List<string[]> plants;
-    public GameObject prefab;
-    public List<GameObject> plantObj;
-    public TextMeshProUGUI testText;
-    void Start()
+
+    
+    [HideInInspector] public List<GameObject> plantObj;
+    [HideInInspector] public List<string[]> plants;
+
+    #endregion // VARIABLES
+
+    #region UNITY_MONOBEHAVIOUR_METHODS
+    private void Start()
     {
         // Get a list of all of the plants with all of their information
-        plants = readFile();
+        plants = ReadFile();
         VuforiaARController.Instance.RegisterVuforiaStartedCallback(LoadDataSet);
-        Debug.Log("Instances Created : " + setInformation(plants,plantObj));
+        var result = SetInformation(plants, plantObj);
+        if (result) Debug.Log("Instances Created : <color=green>true</color>");
+        else Debug.Log("Instances Created: <color=red>false</color>");
     }
+    #endregion //UNITY_MONOBEHAVIOUR_METHODS
 
-    List<string[]> readFile()
+    #region PRIVATE_METHODS
+    // Open and read provided data file (fileToRead) and return a list of all plants in the file
+    // Each plant in returned list will be, itself, a list containing all the information about itself
+    private List<string[]> ReadFile()
     {
-        // Initiate Variables
-        List<string[]> plants = new List<string[]>(); // A list to place each plant into
-        bool cont = true; // Whether or not to continue the process
-        bool quote = false; // Whether the string input is in quotation marks or not
-                            // Read the first line of the text document
-#if UNITY_EDITOR
-        StreamReader fileData = new StreamReader(AssetDatabase.GetAssetPath(fileToRead)); // File to be open which contains all of the plants
-        Debug.Log(fileToRead.name);
-        fileData.ReadLine();
-        while (cont)
+        // Initialize Variables
+        List<string[]> plants = new List<string[]>(); // Ensure 'plants' is a blank list
+        bool cont = true; // Whether to continue the process
+        bool quote = false; // Whether the current information contains a quote (this is used to keep commas in some information)
+
+        #if UNITY_EDITOR // If we're in the Unity Editor
+        StreamReader fileData = new StreamReader(AssetDatabase.GetAssetPath(fileToRead)); // Open the CSV file provided and prepare to start reading
+        Debug.Log(string.Format("Opening file: {0}.", fileToRead.name));
+        fileData.ReadLine(); // Read the first line (this line contains the headers that we don't care about so we skip it here)
+        while (cont) // While we are continuing (the entire document)
         {
-            // Create a new, blank, plant entry to be filled in
-            string[] entry = new string[13];
-            // Read current line of the text file
-            string str = fileData.ReadLine();
-            // Set / Reset Variables
+            // Initialize Local Variables (reinitialized each loop)
+            string[] entry = new string[14]; // A new, blank, plant entry to be filled in (14 = the number of columbs in the CSV document)
+            string str = fileData.ReadLine(); // Current read line of the document
             int index = 0;
             string data = "";
-            // Check if the current line of the text file is empty
-            if (str != null)
+            if (str != null) // Check the current line is not empty
             {
                 foreach (char ch in str) // For each letter in the current line
                 {
@@ -67,14 +84,14 @@ public class Information : MonoBehaviour
             }
         }
         fileData.Close(); // Close the text file
-#else
+        #else
         string path = Application.dataPath;
         int mainindex = 0;
         TextAsset text = Resources.Load<TextAsset>("Data_files/" + fileToRead.name);
         string[] linesFromFile = text.text.Split("\n"[0]);
         for (int i = 0; i < linesFromFile.Length; i++)
         {
-            string[] entry = new string[13];
+            string[] entry = new string[14];
             string str = linesFromFile[i];
             if (mainindex != 0)
             {
@@ -109,46 +126,42 @@ public class Information : MonoBehaviour
             }
             mainindex++;
         }
-#endif
-        return plants; // Return the lit full of all the plants
+        #endif
+        return plants; // Return the list full of all the plants
     }
-
-    bool setInformation(List<string[]> plants, List<GameObject> plantObj)
+    private bool SetInformation(List<string[]> plants, List<GameObject> plantObj)
     {
         // Initiate Variables
         bool test1 = true;
-        string comName;
-        string sciName;
-        string family;
-        string moleAname;
-        string moleAclass;
-        string moleBname;
-        string moleBclass;
-        string moleCname;
-        string moleCclass;
-        string medicinal;
-        int toxicity;
-        string description;
-        int hardiness;
-        GameObject emptyGameObject;
+        string comName, sciName, family, moleAname, moleAclass, moleBname, moleBclass, moleCname, moleCclass, medicinal, description;
+        int[] hardiness;
+        //string[] links;
+        GameObject emptyGameObject, mainModel, moleAmodel, moleBmodel, moleCmodel;
         GameObject model;
         for (int i = 0; i < plantObj.Count; i++) // For each plant in the list
         {
             bool match = false;
             // Get information from the list and pair it with the appropriate
-#if UNITY_EDITOR
+            #if UNITY_EDITOR
             for (int x = 0; x < plants.Count; x++)
-#else
+            #else
             for (int x = 0; x < (plants.Count)-1; x++)
-#endif
+            #endif
             {
                 string name = "";
+                hardiness = new int[2];
                 foreach(char ch in plants[x][0])
                 {
                     if (ch != ' ') name += ch; // Get the name of the plant without spaces
                 }
                 if (plantObj[i].name.ToLower() == name.ToLower())
                 {
+                    // Reset variables for local use
+                    mainModel = null;
+                    moleAmodel = null;
+                    moleBmodel = null;
+                    moleCmodel = null;
+
                     match = true;
                     // Gather information
                     comName = plants[x][0];
@@ -161,61 +174,76 @@ public class Information : MonoBehaviour
                     moleCname = plants[x][7];
                     moleCclass = plants[x][8];
                     medicinal = plants[x][9];
-                    if (!int.TryParse(plants[x][10], out toxicity)) Debug.Log("<color=red>ERROR : " + comName + "'s toxicity non-convertable : '" + plants[x][10] + "'</color>"); // If the toxicity is not in the form ex:"123", then display an error message
+                    if (!int.TryParse(plants[x][10], out int toxicity)) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s toxicity non-convertable : '{1}'.", comName, plants[x][10])); // If the toxicity is not in the form ex:"123", then display an error message
                     description = plants[x][11];
-                    if (!int.TryParse(plants[x][12], out hardiness)) Debug.Log("<color=red>ERROR : " + comName + "'s hardiness non-convertable : '" + plants[x][12] + "'</color>"); // If the hardiness is not in the form ex:"123", then display an error message
+                    var hard = plants[x][12].Split(' ');
+                    if (hard.Length != 3) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness not of form '# to #'.", comName));
+                    else
+                    {
+                        if (!int.TryParse(hard[0], out hardiness[0])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[0])); // If the hardinessStart is not in the form ex:"123", then display an error message
+                        if (!int.TryParse(hard[2], out hardiness[1])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[2])); // If the hardinessEnd is not in the form ex:"123", then display an error message
+                    }
+                    // 'links' is equal to the string of links broken up by spaces 
+                    string[] links = plants[x][13].Split(' ');
                     emptyGameObject = plantObj[i];
 
-                    // Create a cube for visualization purposes and set its transform
-                    GameObject myprefab = getPrefab(comName);
-                    model = Instantiate(myprefab, new Vector3(0.0f, 0.02f, 0.0f), Quaternion.identity); //Assets/Prefabs/NameTag.prefab
-                    model.GetComponent<Plant>().rend = model.GetComponent<MeshRenderer>();
-                    model.GetComponent<Plant>().canvasUI = canvasUI;
-                    model.GetComponent<LockModel>().canvasUI = canvasUI;
-
+                    // Check Assets/Resources/Prefabs for models that match the names provided
+                    if ((comName != null) && (comName != "")) mainModel = getPrefab(comName);
+                    if ((moleAname != null) && (moleAname != "")) moleAmodel = getPrefab(moleAname);
+                    if ((moleBname != null) && (moleBname != "")) moleBmodel = getPrefab(moleBname);
+                    if ((moleCname != null) && (moleCname != "")) moleCmodel = getPrefab(moleCname);
+                    model = Instantiate(plaquePrefab, new Vector3(0.0f, 0.02f, 0.0f), Quaternion.identity); //Assets/Prefabs/NameTag.prefab
+                    Plant plantModel = model.GetComponent<Plant>();
+                    plantModel.rend = model.GetComponent<MeshRenderer>();
+                    plantModel.canvasUI = canvasUI;
+                    if (model.GetComponent<LockModel>() != null) model.GetComponent<LockModel>().canvasUI = canvasUI;
                     // Transfer Information
-                    model.GetComponent<Plant>().comName = comName;
-                    model.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = comName;
-                    model.GetComponent<Plant>().sciName = sciName;
-                    model.GetComponent<Plant>().family = family;
-                    model.GetComponent<Plant>().description = description;
-                    model.GetComponent<Plant>().moleAname = moleAname;
-                    model.GetComponent<Plant>().moleAclass = moleAclass;
-                    model.GetComponent<Plant>().moleBname = moleBname;
-                    model.GetComponent<Plant>().moleBclass = moleBclass;
-                    model.GetComponent<Plant>().moleCname = moleCname;
-                    model.GetComponent<Plant>().moleCclass = moleCclass;
-                    model.GetComponent<Plant>().medicinal = medicinal;
-                    model.GetComponent<Plant>().toxicity = toxicity;
-                    model.GetComponent<Plant>().hardiness = hardiness;
+                    plantModel.plantModel = mainModel;
+                    plantModel.comName = comName;
+                    //model.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = comName;
+                    plantModel.sciName = sciName;
+                    plantModel.family = family;
+                    plantModel.description = description;
+                    plantModel.moleAname = moleAname;
+                    plantModel.moleAclass = moleAclass;
+                    plantModel.moleAmodel = moleAmodel;
+                    plantModel.moleBname = moleBname;
+                    plantModel.moleBclass = moleBclass;
+                    plantModel.moleBmodel = moleBmodel;
+                    plantModel.moleCname = moleCname;
+                    plantModel.moleCclass = moleCclass;
+                    plantModel.moleCmodel = moleCmodel;
+                    plantModel.medicinal = medicinal;
+                    plantModel.toxicity = toxicity;
+                    plantModel.hardiness = hardiness;
+                    plantModel.links = links;
 
                     model.transform.parent = emptyGameObject.transform;
-                    model.name = "Model : " + comName;
+                    model.name = "Info : " + comName;
                     // Set Empty Game Object Transform
                     emptyGameObject.transform.position = new Vector3((float)(0.25 * i), 0.0f, 0.0f);
                     emptyGameObject.transform.rotation = Quaternion.identity;
                     emptyGameObject.transform.localScale = new Vector3(0.2f, 0.2f, 0.2f);
                 }
             }
-            if (!match) Debug.Log("<color=red>ERROR : " + plantObj[i].name + " does not match any plant in database.</color>");
+            if (!match) Debug.Log(string.Format("<color=red>ERROR :</color> '{0}' does not match any plant in database.", plantObj[i].name));
             plantObj[i].name = ("Track : " + plantObj[i].name);
         }
         return test1;
     }
-
-    void LoadDataSet()
+    private void LoadDataSet()
     {
         // Initialize Varaibles
         ObjectTracker objectTracker = TrackerManager.Instance.GetTracker<ObjectTracker>();
         DataSet dataSet = objectTracker.CreateDataSet();
 
-        if (dataSet.Load(dataSetName))
+        if (dataSet.Load(datasetName))
         {
             objectTracker.Stop();  // stop tracker so that we can add new dataset
             if (!objectTracker.ActivateDataSet(dataSet))
             {
                 // Note: ImageTracker cannot have more than 100 total targets activated
-                Debug.Log("<color=yellow>Failed to Activate DataSet: " + dataSetName + "</color>");
+                Debug.Log(string.Format("<color=yellow>Failed to Activate DataSet: </color>'{0}'", datasetName));
             }
             if (!objectTracker.Start()) Debug.Log("<color=yellow>Tracker Failed to Start.</color>");
 
@@ -236,15 +264,15 @@ public class Information : MonoBehaviour
         }
         else
         {
-            Debug.LogError("<color=yellow>Failed to load dataset: '" + dataSetName + "'</color>");
+            Debug.LogError(string.Format("<color=yellow>Failed to load dataset: </color>'{0}'", datasetName));
         }
     }
-
     GameObject getPrefab(string name)
     {
-        if (name[name.Length - 1] == ' ') name = name.Substring(0, name.Length - 1);
+        if ((name.Length > 0) && (name[name.Length - 1] == ' ')) name = name.Substring(0, name.Length - 1);
         GameObject mprefab = Resources.Load<GameObject>("Prefabs/" + name);
-        if (mprefab == null) mprefab = prefab;
+        if (mprefab == null) Debug.Log(string.Format("<color=yellow>Warning : </color>Assets/Resources/Prefabs/'{0}' not found", name));
         return mprefab;
     }
+    #endregion // PRIVATE_METHODS
 }

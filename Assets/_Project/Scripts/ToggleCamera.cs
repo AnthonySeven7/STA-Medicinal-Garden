@@ -30,6 +30,6 @@ public class ToggleCamera : MonoBehaviour
 
     void ButtonText()
     {
-        button.GetComponent<GUIDisplay>().onClick();
+        button.GetComponent<GUIDisplay>().OnClick();
     }
 }

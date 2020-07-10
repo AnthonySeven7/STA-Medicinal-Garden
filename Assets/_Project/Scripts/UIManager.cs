@@ -1,108 +1,108 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using DG.Tweening;
+using TMPro;
 
+/// <summary>
+/// Script that controls the panels of information
+/// </summary>
 public class UIManager : MonoBehaviour
 {
-    public GameObject  gen, molA, molB, molC, more, bkg1, bkg2;
-    private RectTransform gen_Rect, molA_Rect, molB_Rect, molC_Rect, more_Rect, bkg1_Rect, bkg2_Rect, sel_Rect, sel_bkg_Rect;
+    #region VARIABLES
+    public GameObject  gen, molA, molB, molC, more, selected;
+    [Space]
     public string activePanel;
-    private float panel_up, panel_down;
+    [Space]
+    [Header("Text With Resizeable Component")]
+    public TextMeshProUGUI[] tmpComponents;
+    #endregion // VARIABLES
 
+    #region UNITY_MONOBEHAVIOUR_METHODS
     // Start is called before the first frame update
     void Start()
     {
-        panel_up = 0.0f;
-        panel_down = -730;
         activePanel = "";
-        gen_Rect = gen.GetComponent<RectTransform>();
-        molA_Rect = molA.GetComponent<RectTransform>();
-        molB_Rect = molB.GetComponent<RectTransform>();
-        molC_Rect = molC.GetComponent<RectTransform>();
-        more_Rect = more.GetComponent<RectTransform>();
-        bkg1_Rect = bkg1.GetComponent<RectTransform>();
-        bkg2_Rect = bkg2.GetComponent<RectTransform>();
-        sel_bkg_Rect = bkg1_Rect;
     }
+    #endregion // UNITY_MONOBEHAVIOUR_METHODS
 
+    #region PUBLIC_METHODS
+    /// <summary> 
+    /// Methods control which panel is being displayed when a button is pressed
+    /// </summary>
     public void GeneralInfoButton()
     {
-        CheckPanel(gen_Rect, "gen_info");
+        CheckPanel(gen, "gen_info");
     }
-
     public void MoleAButton()
     {
-        CheckPanel(molA_Rect, "moleA");
+        CheckPanel(molA, "moleA");
     }
-
     public void MoleBButton()
     {
-        CheckPanel(molB_Rect, "moleB");
+        CheckPanel(molB, "moleB");
     }
-
     public void MoleCButton()
     {
-        CheckPanel(molC_Rect, "moleC");
+        CheckPanel(molC, "moleC");
     }
-
     public void MoreButton()
     {
-        CheckPanel(more_Rect, "more");
+        CheckPanel(more, "more");
     }
     public void Options()
     {
         CheckPanel(null,"opt");
     }
-    public void cleanUp()
+    public void CleanUp()
     {
-        var delay = 0.25f;
         if (activePanel != "") // if there's a panel open
         {
-            if (sel_Rect != null) sel_Rect.DOAnchorPos(new Vector2(0, panel_down), 0.25f).SetDelay(delay);
-            if (activePanel != "opt")
+            if (selected != null)
             {
-                sel_bkg_Rect.DOAnchorPos(new Vector2(0, panel_down), 0.25f).SetDelay(delay);
-                delay = 0.5f;
-                if (sel_bkg_Rect == bkg1_Rect) sel_bkg_Rect = bkg2_Rect;
-                else sel_bkg_Rect = bkg1_Rect;
+                // Close the panel
+                selected.GetComponent<Animator>().ResetTrigger("down");
+                selected.GetComponent<Animator>().SetTrigger("down");
             }
         }
-        sel_Rect = null;
+        selected = null;
         activePanel = "";
     }
 
-    public void CheckPanel(RectTransform pointer, string name)
+    public void CheckPanel(GameObject pointer, string name)
     {
-        var delay = 0.25f;
         if (activePanel != "") // if there's a panel open
         {
-            if (sel_Rect != null) sel_Rect.DOAnchorPos(new Vector2(0, panel_down), 0.25f).SetDelay(delay);
-            if (activePanel != "opt")
+            if (selected != null)
             {
-                sel_bkg_Rect.DOAnchorPos(new Vector2(0, panel_down), 0.25f).SetDelay(delay);
-                delay = 0.5f;
-                if (sel_bkg_Rect == bkg1_Rect) sel_bkg_Rect = bkg2_Rect;
-                else sel_bkg_Rect = bkg1_Rect;
+                selected.GetComponent<Animator>().ResetTrigger("down");
+                selected.GetComponent<Animator>().SetTrigger("down");
             }
         }
 
         if (activePanel != name) // if active panel is not what we just clicked
         {
-            sel_Rect = pointer;
+            selected = pointer;
             if (name != "opt")
             {
-                sel_Rect.DOAnchorPos(new Vector2(0, panel_up), 0.25f).SetDelay(delay);
-                sel_bkg_Rect.DOAnchorPos(new Vector2(0, panel_up), 0.25f).SetDelay(delay);
+                selected.GetComponent<Animator>().ResetTrigger("up");
+                selected.GetComponent<Animator>().SetTrigger("up");
             }
             activePanel = name;
         }
 
         else // if we closed the open panel
         {
-            sel_Rect = null;
+            selected = null;
             activePanel = "";
         }
     }
+    // Change the font size of all tmpComponents
+    public void SetFontSize(float size)
+    {
+        for(int i = 0; i < tmpComponents.Length; i++)
+        {
+            tmpComponents[i].fontSize = size;
+        }
+    }
+    #endregion // PUBLIC_METHODS
 }
