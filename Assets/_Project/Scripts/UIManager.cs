@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using System;
 
 /// <summary>
 /// Script that controls the panels of information
@@ -60,8 +61,7 @@ public class UIManager : MonoBehaviour
             if (selected != null)
             {
                 // Close the panel
-                selected.GetComponent<Animator>().ResetTrigger("down");
-                selected.GetComponent<Animator>().SetTrigger("down");
+                StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
             }
         }
         selected = null;
@@ -70,12 +70,11 @@ public class UIManager : MonoBehaviour
 
     public void CheckPanel(GameObject pointer, string name)
     {
-        if (activePanel != "") // if there's a panel open
+        if (activePanel != "") // if there's not a panel open
         {
             if (selected != null)
             {
-                selected.GetComponent<Animator>().ResetTrigger("down");
-                selected.GetComponent<Animator>().SetTrigger("down");
+                StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
             }
         }
 
@@ -84,8 +83,7 @@ public class UIManager : MonoBehaviour
             selected = pointer;
             if (name != "opt")
             {
-                selected.GetComponent<Animator>().ResetTrigger("up");
-                selected.GetComponent<Animator>().SetTrigger("up");
+                StartCoroutine(PanelAnimate(selected, 0.3f, "up"));
             }
             activePanel = name;
         }
@@ -103,6 +101,13 @@ public class UIManager : MonoBehaviour
         {
             tmpComponents[i].fontSize = size;
         }
+    }
+
+    IEnumerator PanelAnimate(GameObject pointer, float delay, string trigger)
+    {
+        yield return new WaitForSeconds(delay);
+        pointer.GetComponent<Animator>().ResetTrigger(trigger);
+        pointer.GetComponent<Animator>().SetTrigger(trigger);
     }
     #endregion // PUBLIC_METHODS
 }

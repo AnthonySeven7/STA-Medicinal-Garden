@@ -105,6 +105,7 @@ public class Tutorial : MonoBehaviour
         {
             scenes[i].SetActive(false);
         }
+        scenes[0].SetActive(true);
     }
     #endregion // PUBLIC_METHODS
 
