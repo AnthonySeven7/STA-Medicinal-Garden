@@ -5,15 +5,13 @@ using UnityEngine;
 public class Rotate : MonoBehaviour
 {
     public float spinSpeed;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
         transform.Rotate(0, spinSpeed * Time.deltaTime, 0);
+        foreach(Transform child in transform)
+        {
+            child.transform.Rotate(0, -(spinSpeed * Time.deltaTime), 0);
+        }
     }
 }

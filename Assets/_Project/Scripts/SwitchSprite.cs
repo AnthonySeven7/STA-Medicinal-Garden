@@ -5,28 +5,24 @@ using UnityEngine.UI;
 
 public class SwitchSprite : MonoBehaviour
 {
-    public bool on = true;
+    public bool locked = true;
     public Image target;
-    public Sprite onSprite;
-    public Sprite offSprite;
+    public Sprite lockedSprite;
+    public Sprite unlockedSprite;
 
+    private void Update()
+    {
+        if (locked && target.sprite != lockedSprite) target.sprite = lockedSprite;
+        else if (!locked && target.sprite != unlockedSprite)target.sprite = unlockedSprite;
+    }
     public void switchSprite()
     {
-        on = !on;
-        if (on)
-        {
-            target.sprite = onSprite;
-        }
-        else
-        {
-            target.sprite = offSprite;
-        }
+        locked = !locked;
     }
 
     public void cleanUp()
     {
-        on = true;
-        target.sprite = onSprite;
-        this.GetComponent<Toggle>().isOn = true;
+        locked = true;
+        GetComponent<Toggle>().isOn = true;
     }
 }

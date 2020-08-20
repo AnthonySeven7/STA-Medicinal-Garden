@@ -65,7 +65,9 @@
   <ItemGroup>
     <Compile Include="Assets\_Project\Scripts\ClickableText.cs" />
     <Compile Include="Assets\_Project\Scripts\GUIDisplay.cs" />
+    <Compile Include="Assets\_Project\Scripts\HardinessMaps.cs" />
     <Compile Include="Assets\_Project\Scripts\Information.cs" />
+    <Compile Include="Assets\_Project\Scripts\InteractableObject.cs" />
     <Compile Include="Assets\_Project\Scripts\LockModel.cs" />
     <Compile Include="Assets\_Project\Scripts\Plant.cs" />
     <Compile Include="Assets\_Project\Scripts\Rotate.cs" />
@@ -78,6 +80,7 @@
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Mobile Overlay.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface-Mobile.shader" />
+    <None Include="Assets\_Project\Shaders\VertexColors.shader" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_SDF-Surface.shader" />
     <None Include="Assets\TextMesh Pro\Sprites\EmojiOne Attribution.txt" />
     <None Include="Assets\TextMesh Pro\Resources\Shaders\TMP_Bitmap-Custom-Atlas.shader" />

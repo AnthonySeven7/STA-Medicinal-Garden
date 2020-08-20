@@ -15,25 +15,25 @@ using TMPro;
 /// Displaying the stored information to the designated location on the GUI when the specific object is being tracked and resets the display back
 /// to default values, once the object's tracking has been lost, for future tracking.
 /// </summary>
-//[RequireComponent(typeof())]
 public class Plant : MonoBehaviour
 {
     #region VARIABLES
     // Initialize Variables
     public Canvas canvasUI;
     public MeshRenderer rend;
+    public GameObject linkPrefab;
 
     // Information for the plant
-    public string comName, sciName, family, moleAname, moleAclass, moleAlink, moleBname, moleBclass, moleBlink, moleCname, moleCclass, moleClink, medicinal;
+    public string comName, sciName, family, moleAname, moleAclass, moleAlink, moleBname, moleBclass, moleBlink, moleCname, moleCclass, moleClink;
     public GameObject plantModel, moleAmodel, moleBmodel, moleCmodel;
     [Multiline]
-    public string description = null;
+    public string description, medicinal;
     public int toxicity = -1;
     public int[] hardiness = new int[2] { -1, -1 };
     public string[] links;
 
     // Locations where the information is displayed
-    public TextMeshProUGUI tmp_comName, tmp_sciName, tmp_fam, tmp_description, tmp_moleAname, tmp_moleAclass, tmp_moleBname, tmp_moleBclass, tmp_moleCname, tmp_moleCclass;
+    public TextMeshProUGUI tmp_comName, tmp_sciName, tmp_fam, tmp_description, tmp_moleAname, tmp_moleAclass, tmp_moleBname, tmp_moleBclass, tmp_moleCname, tmp_moleCclass, tmp_medicinal, tmp_hardiness;
     public GameObject[] hardinessImages = new GameObject[14];
 
     // List of all current buttons in GUI
@@ -41,6 +41,8 @@ public class Plant : MonoBehaviour
     
     // Test variable to prevent overlooping
     private bool current = true;
+
+    public List<GameObject> _links;
 
     #endregion // VARIABLES
 
@@ -50,26 +52,27 @@ public class Plant : MonoBehaviour
     {
         // Assign Variables On Start
         rend = GetComponent<MeshRenderer>();
+        // Assign Text Mesh Pro Components
         tmp_comName = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Common Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_sciName = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Scientific Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_fam = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Family Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_description = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Description").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_medicinal = canvasUI.transform.Find("Screens").Find("GeneralInfo").Find("Viewport").Find("Content").Find("Medicinal").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleAname = canvasUI.transform.Find("Screens").Find("MoleA").Find("Viewport").Find("Content").Find("Mole A Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleAclass = canvasUI.transform.Find("Screens").Find("MoleA").Find("Viewport").Find("Content").Find("Mole A Class").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleBname = canvasUI.transform.Find("Screens").Find("MoleB").Find("Viewport").Find("Content").Find("Mole B Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleBclass = canvasUI.transform.Find("Screens").Find("MoleB").Find("Viewport").Find("Content").Find("Mole B Class").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleCname = canvasUI.transform.Find("Screens").Find("MoleC").Find("Viewport").Find("Content").Find("Mole C Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleCclass = canvasUI.transform.Find("Screens").Find("MoleC").Find("Viewport").Find("Content").Find("Mole C Class").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_hardiness = canvasUI.transform.Find("Screens").Find("MoreInfo").Find("Viewport").Find("Content").Find("HardinessZones").gameObject.GetComponent<TextMeshProUGUI>();
+        // Assign Hardiness Maps
         var x = 0;
         foreach (Transform child in canvasUI.transform.Find("Screens").Find("MoreInfo").Find("Viewport").Find("Content").Find("HardinessMaps"))
         {
             if (x != 0) hardinessImages[x - 1] = child.gameObject;
             x++;
         }
-        if (plantModel != null) plantModel = CreateModel(plantModel, "Plant Model : " + comName);
-        if (moleAmodel != null) moleAmodel = CreateModel(moleAmodel, "Mole A Model : " + moleAname);
-        if (moleBmodel != null) moleBmodel = CreateModel(moleBmodel, "Mole B Model : " + moleBname);
-        if (moleCmodel != null) moleCmodel = CreateModel(moleCmodel, "Mole C Model : " + moleCname);
+        CreateModels();
     }
 
     // Update is called once per frame
@@ -94,21 +97,23 @@ public class Plant : MonoBehaviour
         tmp_sciName.text = "<b>Scientific Name: </b><i>" + sciName + "</i>";
         tmp_fam.text = "<b>Family Name: </b>" + family;
         tmp_description.text = "<b>Description: </b>" + description;
+        tmp_medicinal.text = "<b>Medicinal: </b>" + medicinal;
+        tmp_hardiness.text = string.Format("<b>Hardiness Zones:</b> {0}-{1}",hardiness[0], hardiness[1]);
         
         string[] test = Link(moleAclass); // check to see if moleAclass has a link attached to it
-        tmp_moleAname.text = "<b>Mole A Name: </b>" + moleAname;
+        tmp_moleAname.text = "<b>Molecule Name: </b>" + moleAname;
         if (test[1] != "") tmp_moleAclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";// if a link is found then indicate hyperlink by making text blue and underlined
         else tmp_moleAclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
         tmp_moleAclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
         
         test = Link(moleBclass); // check to see if moleBclass has a link attached to it
-        tmp_moleBname.text = "<b>Mole B Name: </b>" + moleBname; 
+        tmp_moleBname.text = "<b>Molecule Name: </b>" + moleBname; 
         if (test[1] != "") tmp_moleBclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";// if a link is found then indicate hyperlink by making text blue and underlined
         else tmp_moleBclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
         tmp_moleBclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
         
         test = Link(moleCclass); // check to see if moleCclass has a link attached to it
-        tmp_moleCname.text = "<b>Mole C Name: </b>" + moleCname;
+        tmp_moleCname.text = "<b>Molecule Name: </b>" + moleCname;
         if (test[1] != "") tmp_moleCclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>"; // if a link is found then indicate hyperlink by making text blue and underlined
         else tmp_moleCclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
         tmp_moleCclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
@@ -126,12 +131,28 @@ public class Plant : MonoBehaviour
             hardinessImages[13].SetActive(true);
         GUIEnabled();
         current = true; // update current state
+
+        // Create Extra Links
+        var textSize = canvasUI.transform.Find("UIManager").GetComponent<UIManager>().textSize;
+        foreach (string link in links)
+        {
+            var linkModel = Instantiate(linkPrefab, Vector3.zero, Quaternion.identity);
+            _links.Add(linkModel);
+            linkModel.GetComponent<TextMeshProUGUI>().text = string.Format("<color=blue><i><u>{0}</u></i></color>", link);
+            linkModel.transform.SetParent(canvasUI.transform.Find("Screens").Find("MoreInfo").Find("Viewport").Find("Content"));
+            linkModel.transform.GetChild(0).GetComponent<ClickableText>().link = link;
+            linkModel.name = link;
+            if (textSize != 0) linkModel.GetComponent<TextMeshProUGUI>().fontSize = textSize;
+            else linkModel.GetComponent<TextMeshProUGUI>().fontSize = 50.0f;
+            linkModel.transform.localScale = Vector3.one;
+            canvasUI.transform.Find("UIManager").GetComponent<UIManager>().tmpComponents.Add(linkModel.GetComponent<TextMeshProUGUI>());
+        }
     }
 
     // Display a particular model from the plant
     public void DisplayModel(string str)
     {
-        if (plantModel != null && str == "plant") plantModel.GetComponent<MeshRenderer>().enabled = true;
+        if (plantModel != null && str == "gen_info") plantModel.GetComponent<MeshRenderer>().enabled = true;
         else if (plantModel != null) plantModel.GetComponent<MeshRenderer>().enabled = false;
         if (moleAmodel != null && str == "moleA") moleAmodel.GetComponent<MeshRenderer>().enabled = true;
         else if (moleAmodel != null) moleAmodel.GetComponent<MeshRenderer>().enabled = false;
@@ -160,15 +181,24 @@ public class Plant : MonoBehaviour
         tmp_sciName.text = "<b>Scientific Name: </b>";
         tmp_fam.text = "<b>Family Name: </b>";
         tmp_description.text = "<b>Description: </b>";
-        tmp_moleAname.text = "<b>Mole A Name: </b>";
+        tmp_medicinal.text = "<b>Medicinal: </b>";
+        tmp_moleAname.text = "<b>Molecule Name: </b>";
         tmp_moleAclass.text = "<b>Class Name: </b>";
-        tmp_moleBname.text = "<b>Mole B Name: </b>";
+        tmp_moleBname.text = "<b>Molecule Name: </b>";
         tmp_moleBclass.text = "<b>Class Name: </b>";
-        tmp_moleCname.text = "<b>Mole C Name: </b>";
+        tmp_moleCname.text = "<b>Molecule Name: </b>";
         tmp_moleCclass.text = "<b>Class Name: </b>";
-        foreach(GameObject obj in hardinessImages)
+        tmp_hardiness.text = "<b>Hardiness Zones: </b>";
+        foreach (GameObject obj in hardinessImages)
         {
             obj.SetActive(false);
+        }
+        if (_links.Count != 0)
+        {
+            foreach (GameObject link in _links)
+            {
+                Destroy(link);
+            }
         }
         DisplayModel("");
         GUIDisabled();
@@ -182,7 +212,7 @@ public class Plant : MonoBehaviour
         int totalButtons = 0;
         buttons = new List<string>();
         // Check for general information
-        if ((comName != null && comName != "") || (sciName != null && sciName != "") || (family != null && family != "") || (description != null && description != ""))
+        if ((comName != null && comName != "") || (sciName != null && sciName != "") || (family != null && family != "") || (description != null && description != "") || (medicinal != null && medicinal != ""))
         {
             buttons.Add("GeneralInfo_Button");
             totalButtons++;
@@ -219,6 +249,7 @@ public class Plant : MonoBehaviour
             currButton.GetComponent<Animator>().Play("ButtonUp_anim");
         }
         canvasUI.transform.Find("ToggleLock").gameObject.SetActive(true);
+        canvasUI.transform.Find("ToggleLock").gameObject.GetComponent<SwitchSprite>().cleanUp();
     }
 
     private void GUIDisabled()
@@ -251,6 +282,36 @@ public class Plant : MonoBehaviour
             else title[check ? 1 : 0] += ch;
         }
         return title;
+    }
+
+    // If A Model Is Provided Then Create It
+    private void CreateModels()
+    {
+        if (plantModel != null) // create plant model if one is provided
+        {
+            plantModel = CreateModel(plantModel, "Plant Model : " + comName);
+            plantModel.transform.parent = plantModel.transform.parent.parent;
+            plantModel.transform.localScale = Vector3.one;
+
+        }
+        if (moleAmodel != null) // create moleA model if one is provided
+        {
+            moleAmodel = CreateModel(moleAmodel, "Mole A Model : " + moleAname);
+            moleAmodel.transform.parent = moleAmodel.transform.parent.parent;
+            moleAmodel.transform.localScale = Vector3.one;
+        }
+        if (moleBmodel != null) // create moleB model if one is provided
+        {
+            moleBmodel = CreateModel(moleBmodel, "Mole B Model : " + moleBname);
+            moleBmodel.transform.parent = moleBmodel.transform.parent.parent;
+            moleBmodel.transform.localScale = Vector3.one;
+        }
+        if (moleCmodel != null) // create moleC model if one is provided
+        {
+            moleCmodel = CreateModel(moleCmodel, "Mole C Model : " + moleCname);
+            moleCmodel.transform.parent = moleCmodel.transform.parent.parent;
+            moleCmodel.transform.localScale = Vector3.one;
+        }
     }
     #endregion // PRIVATE_METHODS
 }

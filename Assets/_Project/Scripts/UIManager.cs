@@ -15,7 +15,11 @@ public class UIManager : MonoBehaviour
     public string activePanel;
     [Space]
     [Header("Text With Resizeable Component")]
-    public TextMeshProUGUI[] tmpComponents;
+    public List<TextMeshProUGUI> tmpComponents;
+    [HideInInspector]
+    public float textSize = 50.0f;
+
+    public bool panelActive = false;
     #endregion // VARIABLES
 
     #region UNITY_MONOBEHAVIOUR_METHODS
@@ -65,41 +69,73 @@ public class UIManager : MonoBehaviour
             }
         }
         selected = null;
+        panelActive = false;
         activePanel = "";
     }
 
     public void CheckPanel(GameObject pointer, string name)
     {
-        if (activePanel != "") // if there's not a panel open
+        if(activePanel != "") // If there's a panel selected
         {
-            if (selected != null)
+            if(selected != null)
             {
-                StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
+                if(panelActive)
+                {
+                    StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
+                    panelActive = false;
+                }
+                else
+                {
+                    if (activePanel == name)
+                    {
+                        StartCoroutine(PanelAnimate(selected, 0.0f, "up"));
+                        panelActive = true;
+                    }
+                }
             }
         }
-
-        if (activePanel != name) // if active panel is not what we just clicked
+        if (activePanel != name)
         {
             selected = pointer;
             if (name != "opt")
             {
-                StartCoroutine(PanelAnimate(selected, 0.3f, "up"));
+                panelActive = false;
             }
             activePanel = name;
         }
 
-        else // if we closed the open panel
-        {
-            selected = null;
-            activePanel = "";
-        }
+        //if (activePanel != "") // if there's a panel open
+        //{
+        //    if (selected != null)
+        //    {
+        //        StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
+        //    }
+        //}
+
+        //if (activePanel != name) // if active panel is not what we just clicked
+        //{
+        //    selected = pointer;
+        //    if (name != "opt")
+        //    {
+        //        StartCoroutine(PanelAnimate(selected, 0.3f, "up"));
+        //    }
+        //    activePanel = name;
+        //}
+
+        //else // if we closed the open panel
+        //{
+        //    selected = null;
+        //    activePanel = "";
+        //}
     }
+
     // Change the font size of all tmpComponents
     public void SetFontSize(float size)
     {
-        for(int i = 0; i < tmpComponents.Length; i++)
+        if (size != 0) textSize = size;
+        foreach(TextMeshProUGUI component in tmpComponents)
         {
-            tmpComponents[i].fontSize = size;
+            component.fontSize = size;
         }
     }
 

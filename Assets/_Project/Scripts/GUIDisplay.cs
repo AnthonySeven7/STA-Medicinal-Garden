@@ -7,12 +7,12 @@ using TMPro;
 public class GUIDisplay : MonoBehaviour
 {
     #region VARIABLES
-    //public GameObject background;
     public GameObject connectedDisplay = null;
     public string Buttontext;
     public bool displayActive = false;
     public Color Button_color_normal = Color.white;
     public Color Button_color_active = Color.white;
+    public int state = 0;
     #endregion // VARIABLES
 
     #region UNITY_MONOBEHAVIOUR_METHODS
@@ -24,32 +24,58 @@ public class GUIDisplay : MonoBehaviour
             if (Buttontext.Length >= 10) GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Baseline;
             else GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
         }
-            if (GetComponent<Image>() != null) GetComponent<Image>().color = Button_color_normal;
+            if (TryGetComponent(out Image image)) image.color = Button_color_normal;
     }
     #endregion // UNITY_MONOBEHAVIOUR_METHODS
 
     #region PUBLIC_METHODS
+    // If the button is clicked
     public void OnClick()
     {
-        if (displayActive) // If button has already been clicked and display is active
+        if (gameObject.name != "Options_Button")
         {
-            GetComponentInChildren<TextMeshProUGUI>().text = Buttontext; // Reset button text
-            if (Buttontext.Length >= 10) GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Baseline;
-            else GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
-            GetComponent<Image>().color = Button_color_normal; // Change the button color back to normal
-            displayActive = false;
+            switch (state)
+            {
+                case 0: // If the button is initially off
+                    CleanUp();
+                    GetComponentInChildren<Image>().color = Button_color_active;
+                    GetComponentInChildren<TextMeshProUGUI>().text = Buttontext;
+                    displayActive = false;
+                    state = 1;
+                    break;
+                case 1:
+                    GetComponentInChildren<TextMeshProUGUI>().text = "Close" + '\n';
+                    GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
+                    displayActive = true;
+                    state = 2;
+                    break;
+                case 2:
+                    GetComponentInChildren<TextMeshProUGUI>().text = Buttontext;
+                    displayActive = false;
+                    state = 1;
+                    break;
+                default:
+                    break;
+            }
         }
         else
         {
-            CleanUp(); // Ensure all other displays are off
-            GetComponentInChildren<TextMeshProUGUI>().text = "Close" + '\n';
-            GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
-            GetComponent<Image>().color = Button_color_active;
-            //if (background.activeSelf == false) background.SetActive(true);
-            if (connectedDisplay != null)
+            Debug.Log("press");
+            if(state == 0)
             {
-                connectedDisplay.SetActive(true);
+                CleanUp();
+                GetComponent<Image>().color = Button_color_active;
+                GetComponentInChildren<TextMeshProUGUI>().text = "Close" + '\n';
                 displayActive = true;
+                state = 1;
+
+            }
+            else if (state == 1)
+            {
+                GetComponent<Image>().color = Button_color_normal;
+                GetComponentInChildren<TextMeshProUGUI>().text = Buttontext;
+                displayActive = false;
+                state = 0;
             }
         }
     }
@@ -58,12 +84,13 @@ public class GUIDisplay : MonoBehaviour
         GetComponentInChildren<TextMeshProUGUI>().text = Buttontext; // Reset button text
         GetComponent<Image>().color = Button_color_normal; // Change the button color back to normal
         displayActive = false;
+        state = 0;
     }
     public void CleanUp()
     {
         foreach(Transform child in transform.parent.parent.Find("MainPanel"))
         {
-            if (child.GetComponent<GUIDisplay>() != null && child.GetComponent<GUIDisplay>().displayActive) child.GetComponent<GUIDisplay>().Close();
+            if (child.GetComponent<GUIDisplay>() != null && child.GetComponent<GUIDisplay>().state != 0) child.GetComponent<GUIDisplay>().Close();
         }
     }
     #endregion // PUBLIC_METHODS

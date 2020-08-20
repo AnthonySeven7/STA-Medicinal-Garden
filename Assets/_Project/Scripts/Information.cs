@@ -22,7 +22,11 @@ public class Information : MonoBehaviour
     [Tooltip("Canvas where all information will be displayed.")]
     public Canvas canvasUI;
 
-    
+    [Tooltip("The default model to be displayed if no model can be found for the plant.")]
+    public GameObject defaultModel;
+    [Tooltip("The default prefab used when creating a hyperlink.")]
+    public GameObject linkPrefab;
+
     [HideInInspector] public List<GameObject> plantObj;
     [HideInInspector] public List<string[]> plants;
 
@@ -188,16 +192,21 @@ public class Information : MonoBehaviour
                     emptyGameObject = plantObj[i];
 
                     // Check Assets/Resources/Prefabs for models that match the names provided
-                    if ((comName != null) && (comName != "")) mainModel = getPrefab(comName);
+                    if ((comName != null) && (comName != ""))
+                    {
+                        mainModel = getPrefab(comName);
+                        //mainModel.transform.parent = emptyGameObject.transform;
+                    }
                     if ((moleAname != null) && (moleAname != "")) moleAmodel = getPrefab(moleAname);
                     if ((moleBname != null) && (moleBname != "")) moleBmodel = getPrefab(moleBname);
                     if ((moleCname != null) && (moleCname != "")) moleCmodel = getPrefab(moleCname);
-                    model = Instantiate(plaquePrefab, new Vector3(0.0f, 0.02f, 0.0f), Quaternion.identity); //Assets/Prefabs/NameTag.prefab
+                    model = Instantiate(plaquePrefab, new Vector3(0.0f, 0.02f, 0.0f), Quaternion.identity);
                     Plant plantModel = model.GetComponent<Plant>();
                     plantModel.rend = model.GetComponent<MeshRenderer>();
                     plantModel.canvasUI = canvasUI;
                     if (model.GetComponent<LockModel>() != null) model.GetComponent<LockModel>().canvasUI = canvasUI;
                     // Transfer Information
+                    plantModel.linkPrefab = linkPrefab;
                     plantModel.plantModel = mainModel;
                     plantModel.comName = comName;
                     //model.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = comName;
@@ -271,7 +280,11 @@ public class Information : MonoBehaviour
     {
         if ((name.Length > 0) && (name[name.Length - 1] == ' ')) name = name.Substring(0, name.Length - 1);
         GameObject mprefab = Resources.Load<GameObject>("Prefabs/" + name);
-        if (mprefab == null) Debug.Log(string.Format("<color=yellow>Warning : </color>Assets/Resources/Prefabs/'{0}' not found", name));
+        if (mprefab == null)
+        {
+            Debug.Log(string.Format("<color=yellow>Warning : </color>Assets/Resources/Prefabs/'{0}' not found", name));
+            return defaultModel;
+        }
         return mprefab;
     }
     #endregion // PRIVATE_METHODS

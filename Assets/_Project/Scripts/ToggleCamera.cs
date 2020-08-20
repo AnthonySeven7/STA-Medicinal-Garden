@@ -9,7 +9,6 @@ public class ToggleCamera : MonoBehaviour
     public Camera SecondCamera;
     public GameObject button;
     public bool arEnabled = true;
-    // Start is called before the first frame update
 
     void Toggle()
     {

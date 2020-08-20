@@ -7,16 +7,10 @@ using TMPro;
 public class LockModel : MonoBehaviour
 {
     public Canvas canvasUI;
-    public Camera ARCamera;
     public bool lockModel;
     public float pos_x = 0.0f;
     public float pos_y = 0.0f;
     public float pos_z = 0.0f;
-
-    void Start()
-    {
-        ARCamera = Camera.main;
-    }
 
     void Update()
     {

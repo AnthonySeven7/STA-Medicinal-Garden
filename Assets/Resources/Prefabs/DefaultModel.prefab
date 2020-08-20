@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1508277057615430333
 RectTransform:
   m_ObjectHideFlags: 0
@@ -281,6 +281,7 @@ GameObject:
   - component: {fileID: 1508277059029689435}
   - component: {fileID: 1508277059029689429}
   - component: {fileID: 9191733652657579618}
+  - component: {fileID: -807566851946077147}
   m_Layer: 0
   m_Name: DefaultModel
   m_TagString: Untagged
@@ -357,12 +358,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1508277059029689431}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ec865a4b04c39db41bd607d4c189229f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spinSpeed: 35
+  spinSpeed: -35
 --- !u!114 &9191733652657579618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,8 +377,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   canvasUI: {fileID: 0}
-  ARCamera: {fileID: 0}
   lockModel: 0
   pos_x: 0
   pos_y: 0
   pos_z: 0
+--- !u!114 &-807566851946077147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508277059029689431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f38eedb94f6dd74aa54bb5dcc92db43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactable: 1
