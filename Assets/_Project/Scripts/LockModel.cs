@@ -14,7 +14,7 @@ public class LockModel : MonoBehaviour
 
     void Update()
     {
-        if (gameObject.GetComponent<MeshRenderer>().enabled)
+        if (RendererCheck())
         {
             lockModel = (canvasUI.transform.Find("ToggleLock").GetComponent<Toggle>().isOn);
             if (!lockModel)
@@ -26,5 +26,25 @@ public class LockModel : MonoBehaviour
                 transform.localScale = new Vector3(transform.parent.position.z, transform.parent.position.z, transform.parent.position.z);
             }
         }
+    }
+
+    private bool RendererCheck()
+    {
+        var check = false;
+        if (GetComponent<MeshRenderer>() != null)
+        {
+            if (GetComponent<MeshRenderer>().enabled) check = true;
+        }
+        else
+        {
+            foreach (Transform child in transform)
+            {
+                if (child.GetComponent<MeshRenderer>() != null)
+                {
+                    if (child.GetComponent<MeshRenderer>().enabled) check = true;
+                }
+            }
+        }
+        return check;
     }
 }

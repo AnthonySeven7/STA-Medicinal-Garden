@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1508277059029689433}
   - component: {fileID: 1508277059029689434}
   - component: {fileID: 571365346679235379}
-  - component: {fileID: 1508277059029689429}
   - component: {fileID: 1508277059029689430}
+  - component: {fileID: 1132646454252552467}
   m_Layer: 0
   m_Name: TempDefaultTrackingBase
   m_TagString: Untagged
@@ -81,19 +81,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &1508277059029689429
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1508277059029689431}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec865a4b04c39db41bd607d4c189229f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  spinSpeed: 35
 --- !u!114 &1508277059029689430
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,6 +95,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasUI: {fileID: 0}
   rend: {fileID: 0}
+  linkPrefab: {fileID: 0}
   comName: 
   sciName: 
   family: 
@@ -140,6 +128,7 @@ MonoBehaviour:
   tmp_moleCname: {fileID: 0}
   tmp_moleCclass: {fileID: 0}
   tmp_medicinal: {fileID: 0}
+  tmp_hardiness: {fileID: 0}
   hardinessImages:
   - {fileID: 0}
   - {fileID: 0}
@@ -156,3 +145,17 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   buttons: []
+  _links: []
+--- !u!114 &1132646454252552467
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1508277059029689431}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec865a4b04c39db41bd607d4c189229f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spinSpeed: 5

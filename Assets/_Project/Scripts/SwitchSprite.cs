@@ -20,6 +20,11 @@ public class SwitchSprite : MonoBehaviour
         locked = !locked;
     }
 
+    public void switchSprite(bool state)
+    {
+        locked = state;
+    }
+
     public void cleanUp()
     {
         locked = true;

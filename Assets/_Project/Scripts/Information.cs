@@ -194,17 +194,18 @@ public class Information : MonoBehaviour
                     // Check Assets/Resources/Prefabs for models that match the names provided
                     if ((comName != null) && (comName != ""))
                     {
-                        mainModel = getPrefab(comName);
+                        mainModel = getPrefab(comName, false);
                         //mainModel.transform.parent = emptyGameObject.transform;
                     }
-                    if ((moleAname != null) && (moleAname != "")) moleAmodel = getPrefab(moleAname);
-                    if ((moleBname != null) && (moleBname != "")) moleBmodel = getPrefab(moleBname);
-                    if ((moleCname != null) && (moleCname != "")) moleCmodel = getPrefab(moleCname);
+                    if ((moleAname != null) && (moleAname != "")) moleAmodel = getPrefab(moleAname, true);
+                    if ((moleBname != null) && (moleBname != "")) moleBmodel = getPrefab(moleBname, true);
+                    if ((moleCname != null) && (moleCname != "")) moleCmodel = getPrefab(moleCname, true);
                     model = Instantiate(plaquePrefab, new Vector3(0.0f, 0.02f, 0.0f), Quaternion.identity);
                     Plant plantModel = model.GetComponent<Plant>();
                     plantModel.rend = model.GetComponent<MeshRenderer>();
                     plantModel.canvasUI = canvasUI;
                     if (model.GetComponent<LockModel>() != null) model.GetComponent<LockModel>().canvasUI = canvasUI;
+                    if (model.GetComponent<Rotate>() != null) model.GetComponent<Rotate>().canvasUI = canvasUI;
                     // Transfer Information
                     plantModel.linkPrefab = linkPrefab;
                     plantModel.plantModel = mainModel;
@@ -276,13 +277,20 @@ public class Information : MonoBehaviour
             Debug.LogError(string.Format("<color=yellow>Failed to load dataset: </color>'{0}'", datasetName));
         }
     }
-    GameObject getPrefab(string name)
+    GameObject getPrefab(string name, bool mole)
     {
         if ((name.Length > 0) && (name[name.Length - 1] == ' ')) name = name.Substring(0, name.Length - 1);
-        GameObject mprefab = Resources.Load<GameObject>("Prefabs/" + name);
-        if (mprefab == null)
+        GameObject mprefab;
+        if (!mole) mprefab = Resources.Load<GameObject>("Prefabs/" + name);
+        else mprefab = Resources.Load<GameObject>("Prefabs/Molecules/" + name);
+        if (mprefab == null && !mole)
         {
             Debug.Log(string.Format("<color=yellow>Warning : </color>Assets/Resources/Prefabs/'{0}' not found", name));
+            return defaultModel;
+        }
+        else if (mprefab == null && mole)
+        {
+            Debug.Log(string.Format("<color=yellow>Warning : </color>Assets/Resources/Prefabs/Molecules/'{0}' not found", name));
             return defaultModel;
         }
         return mprefab;

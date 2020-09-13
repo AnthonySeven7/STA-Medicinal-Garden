@@ -24,7 +24,7 @@ public class Plant : MonoBehaviour
     public GameObject linkPrefab;
 
     // Information for the plant
-    public string comName, sciName, family, moleAname, moleAclass, moleAlink, moleBname, moleBclass, moleBlink, moleCname, moleCclass, moleClink;
+    public string comName, sciName, family, moleAname, moleAclass, moleAlink, moleBname, moleBclass, moleBlink, moleCname, moleCclass, moleClink, compare;
     public GameObject plantModel, moleAmodel, moleBmodel, moleCmodel;
     [Multiline]
     public string description, medicinal;
@@ -78,46 +78,168 @@ public class Plant : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gameObject.name != "FontSize")
-        {
-            // Check if current state does not equal desired state
-            if (rend.enabled) DisplayModel(canvasUI.transform.Find("UIManager").GetComponent<UIManager>().activePanel);
-            if ((current != rend.enabled) && rend.enabled) Isenabled();
-            else if ((current != rend.enabled) && !rend.enabled) Isdisabled();
-        }
+        // Check if current state does not equal desired state
+        if (rend.enabled) DisplayModel(canvasUI.transform.Find("UIManager").GetComponent<UIManager>().activePanel);
+        if ((current != rend.enabled) && rend.enabled) Isenabled();
+        else if ((current != rend.enabled) && !rend.enabled) Isdisabled();
     }
     #endregion // UNITY_MONOBEHAVIOUR_METHODS
 
-    #region PUBLIC_METHODS
+    #region PRIVATE_METHODS
+    // Display a particular model from the plant
+    private void DisplayModel(string str)
+    {
+        if (str == "gen_info" && compare != str && MeshRendererCheck(plantModel) && !MeshRendererCheck(plantModel, true)) MeshRendererSet(plantModel, true);
+        else if (str != "gen_info" && MeshRendererCheck(plantModel) && !MeshRendererCheck(plantModel, false)) MeshRendererSet(plantModel, false);
+        if (str == "moleA" && compare != str && MeshRendererCheck(moleAmodel) && !MeshRendererCheck(moleAmodel, true)) MeshRendererSet(moleAmodel, true);
+        else if (str != "moleA" && MeshRendererCheck(moleAmodel) && !MeshRendererCheck(moleAmodel, false)) MeshRendererSet(moleAmodel, false);
+        if (str == "moleB" && compare != str && MeshRendererCheck(moleBmodel) && !MeshRendererCheck(moleBmodel, true)) MeshRendererSet(moleBmodel, true);
+        else if (str != "moleB" && MeshRendererCheck(moleBmodel) && !MeshRendererCheck(moleBmodel, false)) MeshRendererSet(moleBmodel, false);
+        if (str == "moleC" && compare != str && MeshRendererCheck(moleCmodel) && !MeshRendererCheck(moleCmodel, true)) MeshRendererSet(moleCmodel, true);
+        else if (str != "moleC" && MeshRendererCheck(moleCmodel) && !MeshRendererCheck(moleCmodel, false)) MeshRendererSet(moleCmodel, false);
+
+        if (MeshRendererCheck(plantModel, true)) DisplayModelHelper(plantModel, true);
+        else if (MeshRendererCheck(moleAmodel, true)) DisplayModelHelper(moleAmodel, true);
+        else if (MeshRendererCheck(moleBmodel, true)) DisplayModelHelper(moleBmodel, true);
+        else if (MeshRendererCheck(moleCmodel, true)) DisplayModelHelper(moleCmodel, true);
+        else if (compare != str) DisplayModelHelper(null, false);
+
+        compare = str;
+    }
+    private void DisplayModelHelper(GameObject obj, bool state)
+    {
+        if (canvasUI.transform.Find("ToggleLock").gameObject.activeSelf != state)
+        {
+            canvasUI.transform.Find("ToggleLock").gameObject.SetActive(state);
+            canvasUI.transform.Find("ToggleLock").gameObject.GetComponent<SwitchSprite>().cleanUp();
+        }
+        if (canvasUI.transform.Find("ToggleRotate").gameObject.activeSelf != state)
+        {
+            canvasUI.transform.Find("ToggleRotate").gameObject.SetActive(state);
+            canvasUI.transform.Find("ToggleRotate").gameObject.GetComponent<SwitchSprite>().cleanUp();
+        }
+        
+            if (state && obj != null && obj.transform.childCount > 1) canvasUI.transform.Find("ToggleVisible").gameObject.SetActive(true);
+            else if ((!state) || (obj.transform.childCount <= 1)) canvasUI.transform.Find("ToggleVisible").gameObject.SetActive(false);
+    }
+
+    // Check if provided object or its children have a mesh renderer
+    private bool MeshRendererCheck(GameObject obj)
+    {
+        if (obj == null) return false;
+        if (obj.TryGetComponent(out MeshRenderer rend)) return true;
+        else
+        {
+            foreach (Transform child in obj.transform)
+            {
+                if (child.TryGetComponent(out MeshRenderer render) && render != null) return true;
+            }
+        }
+        return false;
+    }
+    
+    // Check if provided object or its children's mesh renderer is in a given state
+    private bool MeshRendererCheck(GameObject obj, bool state)
+    {
+        if (obj == null) return false;
+        if (obj.TryGetComponent(out MeshRenderer rend) && rend != null && rend.enabled == state) return true;
+        else
+        {
+            foreach (Transform child in obj.transform)
+            {
+                if (child.TryGetComponent(out MeshRenderer render) && render != null && render.enabled == state) return true;
+            }
+        }
+        return false;
+    }
+
+    private bool MeshRendererSet(GameObject obj, bool state)
+    {
+        var pointer = canvasUI.transform.Find("ToggleVisible").Find("VisibleSelect").Find("Viewport").Find("Content");
+        for (int i = 1; i < pointer.transform.childCount; i++)
+        {
+            Destroy(pointer.transform.GetChild(i).gameObject);
+        }
+        pointer.transform.GetChild(0).gameObject.name = "Default";
+        pointer.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "Default";
+        pointer.transform.GetChild(0).GetComponent<ToggleVisible>().pointer = null;
+        if (obj == null) return false;
+        if (obj.transform.localRotation != Quaternion.identity) obj.transform.localRotation = Quaternion.identity;
+        if (obj.TryGetComponent(out MeshRenderer rend) && rend != null && rend.enabled != state)
+        {
+            rend.enabled = state;
+            return true;
+        }
+        else
+        {
+            var check = false;
+            foreach (Transform child in obj.transform)
+            {
+                if (child.TryGetComponent(out MeshRenderer render) && render != null && render.enabled != state)
+                {
+                    render.enabled = state;
+                    check = true;
+                }
+            }
+            if(check && state)
+            {
+                if (state  && obj.transform.childCount != 0)
+                {
+                    pointer.GetChild(0).name = obj.transform.GetChild(0).name;
+                    pointer.GetChild(0).GetComponent<TextMeshProUGUI>().text = obj.transform.GetChild(0).name;
+                    pointer.GetChild(0).GetComponent<ToggleVisible>().pointer = obj.transform.GetChild(0).gameObject;
+                    GameObject comp;
+                    foreach (Transform child in obj.transform)
+                    {
+                        if (child != obj.transform.GetChild(0))
+                        {
+                            Debug.Log(child.name);
+                            comp = Instantiate(pointer.transform.GetChild(0).gameObject);
+                            comp.transform.SetParent(pointer);
+                            comp.transform.localScale = Vector3.one;
+                            comp.name = child.name;
+                            comp.transform.GetComponent<TextMeshProUGUI>().text = child.name;
+                            comp.transform.GetComponent<ToggleVisible>().pointer = child.gameObject;
+
+                        }
+                    }
+                }
+            }
+            return check;
+        }
+    }
+
     // If Model Is Being Tracked
     public void Isenabled()
     {
+        current = true;
         // Set all displays to show current plant's information
         tmp_comName.text = "<b>Common Name: </b>" + comName;
         tmp_sciName.text = "<b>Scientific Name: </b><i>" + sciName + "</i>";
         tmp_fam.text = "<b>Family Name: </b>" + family;
         tmp_description.text = "<b>Description: </b>" + description;
-        tmp_medicinal.text = "<b>Medicinal: </b>" + medicinal;
-        tmp_hardiness.text = string.Format("<b>Hardiness Zones:</b> {0}-{1}",hardiness[0], hardiness[1]);
-        
+        if (medicinal != "") tmp_medicinal.text = "<b>Medicinal: </b>" + medicinal;
+        else tmp_medicinal.text = "";
+        tmp_hardiness.text = string.Format("<b>Hardiness Zones:</b> {0}-{1}", hardiness[0], hardiness[1]);
+
         string[] test = Link(moleAclass); // check to see if moleAclass has a link attached to it
         tmp_moleAname.text = "<b>Molecule Name: </b>" + moleAname;
         if (test[1] != "") tmp_moleAclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";// if a link is found then indicate hyperlink by making text blue and underlined
         else tmp_moleAclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
         tmp_moleAclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
-        
+
         test = Link(moleBclass); // check to see if moleBclass has a link attached to it
-        tmp_moleBname.text = "<b>Molecule Name: </b>" + moleBname; 
+        tmp_moleBname.text = "<b>Molecule Name: </b>" + moleBname;
         if (test[1] != "") tmp_moleBclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>";// if a link is found then indicate hyperlink by making text blue and underlined
         else tmp_moleBclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
         tmp_moleBclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
-        
+
         test = Link(moleCclass); // check to see if moleCclass has a link attached to it
         tmp_moleCname.text = "<b>Molecule Name: </b>" + moleCname;
         if (test[1] != "") tmp_moleCclass.text = "<b>Class Name: </b><color=blue><i><u>" + test[0] + "</u></i></color>"; // if a link is found then indicate hyperlink by making text blue and underlined
         else tmp_moleCclass.text = "<b>Class Name: </b>" + test[0]; // if no link is provided, display text normally
         tmp_moleCclass.transform.GetChild(0).GetComponent<ClickableText>().link = test[1];
-        
+
         // Only display hardiness maps related to current plant
         var temp = hardiness[0];
         if (temp > 0)
@@ -128,7 +250,7 @@ public class Plant : MonoBehaviour
                 temp++;
             }
         }
-            hardinessImages[13].SetActive(true);
+        hardinessImages[13].SetActive(true);
         GUIEnabled();
         current = true; // update current state
 
@@ -147,35 +269,13 @@ public class Plant : MonoBehaviour
             linkModel.transform.localScale = Vector3.one;
             canvasUI.transform.Find("UIManager").GetComponent<UIManager>().tmpComponents.Add(linkModel.GetComponent<TextMeshProUGUI>());
         }
+        if (canvasUI.transform.Find("ToggleVisible").gameObject.activeSelf) canvasUI.transform.Find("ToggleVisible").GetComponent<ToggleVisible>().CleanUp();
     }
 
-    // Display a particular model from the plant
-    public void DisplayModel(string str)
-    {
-        if (plantModel != null && str == "gen_info") plantModel.GetComponent<MeshRenderer>().enabled = true;
-        else if (plantModel != null) plantModel.GetComponent<MeshRenderer>().enabled = false;
-        if (moleAmodel != null && str == "moleA") moleAmodel.GetComponent<MeshRenderer>().enabled = true;
-        else if (moleAmodel != null) moleAmodel.GetComponent<MeshRenderer>().enabled = false;
-        if (moleBmodel != null && str == "moleB") moleBmodel.GetComponent<MeshRenderer>().enabled = true;
-        else if (moleBmodel != null) moleBmodel.GetComponent<MeshRenderer>().enabled = false;
-        if (moleCmodel != null && str == "moleC") moleCmodel.GetComponent<MeshRenderer>().enabled = true;
-        else if (moleCmodel != null) moleCmodel.GetComponent<MeshRenderer>().enabled = false;
-    }
-    #endregion // PUBLIC_METHODS
-
-    #region PRIVATE_METHODS
-    private GameObject CreateModel(GameObject obj, string str)
-    {
-        obj = Instantiate(obj, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
-        obj.transform.parent = transform;
-        obj.transform.localPosition = Vector3.zero;
-        obj.name = str;
-        obj.GetComponent<LockModel>().canvasUI = canvasUI;
-        return obj;
-    }
     // If Model Is Not Begin Tracked
     private void Isdisabled()
     {
+        current = false;
         // set all displays to default messages
         tmp_comName.text = "<b>Common Name: </b>";
         tmp_sciName.text = "<b>Scientific Name: </b>";
@@ -200,6 +300,7 @@ public class Plant : MonoBehaviour
                 Destroy(link);
             }
         }
+        if (canvasUI.transform.Find("ToggleVisible").gameObject.activeSelf) canvasUI.transform.Find("ToggleVisible").GetComponent<ToggleVisible>().CleanUp();
         DisplayModel("");
         GUIDisabled();
         current = false; // update current state
@@ -218,19 +319,19 @@ public class Plant : MonoBehaviour
             totalButtons++;
         }
         // Check for molecule A
-        if (moleAname != null && moleAclass != null && moleAname != "" && moleAclass != "")
+        if (moleAname != "" || (moleAclass != "" && moleAname != "" && moleAclass != ""))
         {
             buttons.Add("MoleA_Button");
             totalButtons++;
         }
         // Check for molecule B
-        if (moleBname != null && moleBclass != null && moleBname != "" && moleBclass != "")
+        if (moleBname != "" || (moleBclass != "" && moleBname != "" && moleBclass != ""))
         {
             buttons.Add("MoleB_Button");
             totalButtons++;
         }
         // Check for molecule C
-        if (moleCname != null && moleCclass != null && moleCname != "" && moleCclass != "")
+        if (moleCname != "" || (moleCclass != "" && moleCname != "" && moleCclass != ""))
         {
             buttons.Add("MoleC_Button");
             totalButtons++;
@@ -248,8 +349,16 @@ public class Plant : MonoBehaviour
             count++;
             currButton.GetComponent<Animator>().Play("ButtonUp_anim");
         }
-        canvasUI.transform.Find("ToggleLock").gameObject.SetActive(true);
-        canvasUI.transform.Find("ToggleLock").gameObject.GetComponent<SwitchSprite>().cleanUp();
+        foreach(Transform child in canvasUI.transform.Find("Screens").transform)
+        {
+            if(child.TryGetComponent(out Animator anim))
+            {
+                anim.ResetTrigger("up");
+                anim.ResetTrigger("down");
+            }
+        }
+        //canvasUI.transform.Find("Lock").gameObject.SetActive(true);
+        //canvasUI.transform.Find("ToggleLock").gameObject.GetComponent<SwitchSprite>().cleanUp();
     }
 
     private void GUIDisabled()
@@ -265,6 +374,8 @@ public class Plant : MonoBehaviour
         }
         canvasUI.transform.Find("ToggleLock").GetComponent<SwitchSprite>().cleanUp();
         canvasUI.transform.Find("ToggleLock").gameObject.SetActive(false);
+        canvasUI.transform.Find("ToggleRotate").GetComponent<SwitchSprite>().cleanUp();
+        canvasUI.transform.Find("ToggleRotate").gameObject.SetActive(false);
         canvasUI.transform.Find("UIManager").GetComponent<UIManager>().CleanUp();
         canvasUI.transform.Find("MainPanel").GetChild(0).GetComponent<GUIDisplay>().CleanUp();
     }
@@ -289,29 +400,39 @@ public class Plant : MonoBehaviour
     {
         if (plantModel != null) // create plant model if one is provided
         {
-            plantModel = CreateModel(plantModel, "Plant Model : " + comName);
+            plantModel = CreateModels(plantModel, "Plant Model : " + comName);
             plantModel.transform.parent = plantModel.transform.parent.parent;
             plantModel.transform.localScale = Vector3.one;
 
         }
         if (moleAmodel != null) // create moleA model if one is provided
         {
-            moleAmodel = CreateModel(moleAmodel, "Mole A Model : " + moleAname);
+            moleAmodel = CreateModels(moleAmodel, "Mole A Model : " + moleAname);
             moleAmodel.transform.parent = moleAmodel.transform.parent.parent;
             moleAmodel.transform.localScale = Vector3.one;
         }
         if (moleBmodel != null) // create moleB model if one is provided
         {
-            moleBmodel = CreateModel(moleBmodel, "Mole B Model : " + moleBname);
+            moleBmodel = CreateModels(moleBmodel, "Mole B Model : " + moleBname);
             moleBmodel.transform.parent = moleBmodel.transform.parent.parent;
             moleBmodel.transform.localScale = Vector3.one;
         }
         if (moleCmodel != null) // create moleC model if one is provided
         {
-            moleCmodel = CreateModel(moleCmodel, "Mole C Model : " + moleCname);
+            moleCmodel = CreateModels(moleCmodel, "Mole C Model : " + moleCname);
             moleCmodel.transform.parent = moleCmodel.transform.parent.parent;
             moleCmodel.transform.localScale = Vector3.one;
         }
+    }
+
+    private GameObject CreateModels(GameObject obj, string str)
+    {
+        obj = Instantiate(obj, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+        obj.transform.parent = transform;
+        obj.transform.localPosition = Vector3.zero;
+        obj.name = str;
+        obj.GetComponent<LockModel>().canvasUI = canvasUI;
+        return obj;
     }
     #endregion // PRIVATE_METHODS
 }

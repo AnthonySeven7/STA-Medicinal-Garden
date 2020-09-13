@@ -16,14 +16,14 @@ public class InteractableObject : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!GetComponent<MeshRenderer>().enabled && rendererOn) // If the mesh renderer was just turned off
+        if (!RendererCheck() && rendererOn) // If the mesh renderer was just turned off
         {
             // Reset rotation and scale
             transform.rotation = Quaternion.identity;
             transform.localScale = Vector3.one;
             rendererOn = false;
         }
-        else if (GetComponent<MeshRenderer>().enabled && !rendererOn) rendererOn = true;
+        else if (RendererCheck() && !rendererOn) rendererOn = true;
 
         if(interactable && Input.touchCount > 0)
         {
@@ -53,4 +53,25 @@ public class InteractableObject : MonoBehaviour
         }
     }
     #endregion //UNITY_MONOBEHAVOIUR_METHODS
+    #region PRIVATE_METHODS
+    private bool RendererCheck()
+    {
+        var check = false;
+        if (GetComponent<MeshRenderer>() != null)
+        {
+            if (GetComponent<MeshRenderer>().enabled) check = true;
+        }
+        else
+        {
+            foreach (Transform child in transform)
+            {
+                if (child.GetComponent<MeshRenderer>() != null)
+                {
+                    if (child.GetComponent<MeshRenderer>().enabled) check = true;
+                }
+            }
+        }
+        return check;
+    }
+    #endregion
 }

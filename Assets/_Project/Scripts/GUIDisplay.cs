@@ -34,6 +34,7 @@ public class GUIDisplay : MonoBehaviour
     {
         if (gameObject.name != "Options_Button")
         {
+            Debug.Log("<color=red>Button Pressed</color>");
             switch (state)
             {
                 case 0: // If the button is initially off

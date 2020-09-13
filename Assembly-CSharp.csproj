@@ -73,6 +73,7 @@
     <Compile Include="Assets\_Project\Scripts\Rotate.cs" />
     <Compile Include="Assets\_Project\Scripts\SwitchSprite.cs" />
     <Compile Include="Assets\_Project\Scripts\ToggleCamera.cs" />
+    <Compile Include="Assets\_Project\Scripts\ToggleVisible.cs" />
     <Compile Include="Assets\_Project\Scripts\TrackableTest.cs" />
     <Compile Include="Assets\_Project\Scripts\Tutorial.cs" />
     <Compile Include="Assets\_Project\Scripts\UIManager.cs" />

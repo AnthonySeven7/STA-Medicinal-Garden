@@ -68,6 +68,7 @@ public class UIManager : MonoBehaviour
                 StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
             }
         }
+        if (selected != null) selected.GetComponent<Animator>().ResetTrigger("down");
         selected = null;
         panelActive = false;
         activePanel = "";
@@ -79,6 +80,7 @@ public class UIManager : MonoBehaviour
         {
             if(selected != null)
             {
+                Debug.Log("Test");
                 if(panelActive)
                 {
                     StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
@@ -105,7 +107,7 @@ public class UIManager : MonoBehaviour
         }
 
         //if (activePanel != "") // if there's a panel open
-        //{
+        //{ 
         //    if (selected != null)
         //    {
         //        StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
@@ -142,6 +144,7 @@ public class UIManager : MonoBehaviour
     IEnumerator PanelAnimate(GameObject pointer, float delay, string trigger)
     {
         yield return new WaitForSeconds(delay);
+        Debug.Log("Panel Animate");
         pointer.GetComponent<Animator>().ResetTrigger(trigger);
         pointer.GetComponent<Animator>().SetTrigger(trigger);
     }
