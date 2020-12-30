@@ -943,12 +943,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'On this screen, you can edit things like font size, color, or replay this
-    tutorial.
+  m_text: 'On this screen, you can edit things like font size or replay this tutorial.
 
 
-    To continue, close the options screen by repressing the button
-    on the top left.'
+    To
+    continue, close the options screen by repressing the button on the top left.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -1017,10 +1016,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: -63.29855}
   m_textInfo:
     textComponent: {fileID: 31171432}
-    characterCount: 164
+    characterCount: 156
     spriteCount: 0
-    spaceCount: 29
-    wordCount: 29
+    spaceCount: 28
+    wordCount: 28
     linkCount: 0
     lineCount: 7
     pageCount: 1
@@ -4923,8 +4922,7 @@ MonoBehaviour:
     please go to ''Settings''.
 
 
-    If you have any further questions please see
-    a URI botanical garden worker.'
+    To learn more please visit https://web.uri.edu/youngken-garden/'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -4952,7 +4950,7 @@ MonoBehaviour:
   m_outlineColor:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontSize: 41.75
+  m_fontSize: 43.15
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -4993,12 +4991,12 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 369306980}
-    characterCount: 166
+    characterCount: 154
     spriteCount: 0
-    spaceCount: 27
-    wordCount: 27
+    spaceCount: 20
+    wordCount: 24
     linkCount: 0
-    lineCount: 7
+    lineCount: 6
     pageCount: 1
     materialCount: 1
   m_isUsingLegacyAnimationComponent: 0
@@ -8597,7 +8595,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Welcome to the Heber W. Youngkem Medicinal Garden
+  m_text: 'Welcome to the Heber W. Youngken Medicinal Garden
 
 
     This tutorial
@@ -8673,10 +8671,10 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_textInfo:
     textComponent: {fileID: 697670829}
-    characterCount: 154
+    characterCount: 167
     spriteCount: 0
-    spaceCount: 26
-    wordCount: 26
+    spaceCount: 28
+    wordCount: 28
     linkCount: 0
     lineCount: 7
     pageCount: 1
@@ -10502,7 +10500,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &814715423
 RectTransform:
   m_ObjectHideFlags: 0
@@ -18810,7 +18808,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c53772b3ba946f49bf7aadcee53d1ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fileToRead: {fileID: 4900000, guid: eb4cf880dcc47e64c9a117370284a6b5, type: 3}
+  fileToRead: {fileID: 4900000, guid: bed86685a28a3ca48be46fa8fab75031, type: 3}
   datasetName: PlantProject
   plaquePrefab: {fileID: 1508277059029689431, guid: f0d19e2897da1e54283c11b323a6f5f0,
     type: 3}
