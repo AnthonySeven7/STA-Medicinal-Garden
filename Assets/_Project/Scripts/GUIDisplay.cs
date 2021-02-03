@@ -38,11 +38,23 @@ public class GUIDisplay : MonoBehaviour
             switch (state)
             {
                 case 0: // If the button is initially off
-                    CleanUp();
-                    GetComponentInChildren<Image>().color = Button_color_active;
-                    GetComponentInChildren<TextMeshProUGUI>().text = Buttontext;
-                    displayActive = false;
-                    state = 1;
+                    if(gameObject.name != "MoreInfo_Button" && gameObject.name != "GeneralInfo_Button")
+                    {
+                        CleanUp();
+                        GetComponentInChildren<Image>().color = Button_color_active;
+                        GetComponentInChildren<TextMeshProUGUI>().text = Buttontext;
+                        displayActive = false;
+                        state = 1;
+                    }
+                    else
+                    {
+                        CleanUp();
+                        GetComponentInChildren<Image>().color = Button_color_active;
+                        GetComponentInChildren<TextMeshProUGUI>().text = "Close" + '\n';
+                        GetComponentInChildren<TextMeshProUGUI>().alignment = TextAlignmentOptions.Midline;
+                        displayActive = true;
+                        state = 2;
+                    }
                     break;
                 case 1:
                     GetComponentInChildren<TextMeshProUGUI>().text = "Close" + '\n';
@@ -66,7 +78,7 @@ public class GUIDisplay : MonoBehaviour
             {
                 CleanUp();
                 GetComponent<Image>().color = Button_color_active;
-                GetComponentInChildren<TextMeshProUGUI>().text = "Close" + '\n';
+                //GetComponentInChildren<TextMeshProUGUI>().text = "Close" + '\n';
                 displayActive = true;
                 state = 1;
 
@@ -74,7 +86,7 @@ public class GUIDisplay : MonoBehaviour
             else if (state == 1)
             {
                 GetComponent<Image>().color = Button_color_normal;
-                GetComponentInChildren<TextMeshProUGUI>().text = Buttontext;
+                //GetComponentInChildren<TextMeshProUGUI>().text = Buttontext;
                 displayActive = false;
                 state = 0;
             }

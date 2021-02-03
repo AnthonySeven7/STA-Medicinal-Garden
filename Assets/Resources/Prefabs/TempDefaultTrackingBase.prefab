@@ -60,7 +60,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: cd1e230a307f9f240bd4fbb5dffe82cc, type: 2}
+  - {fileID: 2100000, guid: 090496ff99264474fbccbefc6f526a5d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -108,6 +108,7 @@ MonoBehaviour:
   moleCname: 
   moleCclass: 
   moleClink: 
+  compare: 
   plantModel: {fileID: 0}
   moleAmodel: {fileID: 0}
   moleBmodel: {fileID: 0}
@@ -159,3 +160,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spinSpeed: 5
+  canvasUI: {fileID: 0}

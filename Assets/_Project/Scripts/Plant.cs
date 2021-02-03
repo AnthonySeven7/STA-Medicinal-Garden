@@ -24,16 +24,15 @@ public class Plant : MonoBehaviour
     public GameObject linkPrefab;
 
     // Information for the plant
-    public string comName, sciName, family, moleAname, moleAclass, moleAlink, moleBname, moleBclass, moleBlink, moleCname, moleCclass, moleClink, compare;
+    public string comName, sciName, family, moleAname, moleAclass, moleAlink, moleBname, moleBclass, moleBlink, moleCname, moleCclass, moleClink, toxicity, compare;
     public GameObject plantModel, moleAmodel, moleBmodel, moleCmodel;
     [Multiline]
     public string description, medicinal;
-    public int toxicity = -1;
     public int[] hardiness = new int[2] { -1, -1 };
     public string[] links;
 
     // Locations where the information is displayed
-    public TextMeshProUGUI tmp_comName, tmp_sciName, tmp_fam, tmp_description, tmp_moleAname, tmp_moleAclass, tmp_moleBname, tmp_moleBclass, tmp_moleCname, tmp_moleCclass, tmp_medicinal, tmp_hardiness;
+    public TextMeshProUGUI tmp_comName, tmp_sciName, tmp_fam, tmp_description, tmp_moleAname, tmp_moleAclass, tmp_moleBname, tmp_moleBclass, tmp_moleCname, tmp_moleCclass, tmp_medicinal, tmp_hardiness, tmp_toxicity;
     public GameObject[] hardinessImages = new GameObject[14];
 
     // List of all current buttons in GUI
@@ -65,6 +64,7 @@ public class Plant : MonoBehaviour
         tmp_moleCname = canvasUI.transform.Find("Screens").Find("MoleC").Find("Viewport").Find("Content").Find("Mole C Name").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_moleCclass = canvasUI.transform.Find("Screens").Find("MoleC").Find("Viewport").Find("Content").Find("Mole C Class").gameObject.GetComponent<TextMeshProUGUI>();
         tmp_hardiness = canvasUI.transform.Find("Screens").Find("MoreInfo").Find("Viewport").Find("Content").Find("HardinessZones").gameObject.GetComponent<TextMeshProUGUI>();
+        tmp_toxicity = canvasUI.transform.Find("Screens").Find("MoreInfo").Find("Viewport").Find("Content").Find("Toxicity").gameObject.GetComponent<TextMeshProUGUI>();
         // Assign Hardiness Maps
         var x = 0;
         foreach (Transform child in canvasUI.transform.Find("Screens").Find("MoreInfo").Find("Viewport").Find("Content").Find("HardinessMaps"))
@@ -73,6 +73,7 @@ public class Plant : MonoBehaviour
             x++;
         }
         CreateModels();
+        DisplayModelHelper(null, false);
     }
 
     // Update is called once per frame
@@ -212,6 +213,7 @@ public class Plant : MonoBehaviour
     // If Model Is Being Tracked
     public void Isenabled()
     {
+        canvasUI.transform.Find("UIManager").GetComponent<UIManager>().currentPlant = transform.parent.gameObject;
         current = true;
         // Set all displays to show current plant's information
         tmp_comName.text = "<b>Common Name: </b>" + comName;
@@ -220,7 +222,58 @@ public class Plant : MonoBehaviour
         tmp_description.text = "<b>Description: </b>" + description;
         if (medicinal != "") tmp_medicinal.text = "<b>Medicinal: </b>" + medicinal;
         else tmp_medicinal.text = "";
-        tmp_hardiness.text = string.Format("<b>Hardiness Zones:</b> {0}-{1}", hardiness[0], hardiness[1]);
+        if (hardiness[0] != hardiness[1]) tmp_hardiness.text = string.Format("<b>Hardiness Zones:</b> {0}-{1}", hardiness[0], hardiness[1]);
+        else string.Format("<b>Hardiness Zones:</b> {0}", hardiness[0]);
+        // Deal With Toxicity
+        if(toxicity == "" || toxicity == null) tmp_toxicity.transform.parent.Find("Dial").GetChild(0).GetComponent<Image>().enabled = false;
+        else
+        {
+            if (tmp_toxicity.transform.parent.Find("Dial").GetChild(0).GetComponent<Image>().enabled == false) tmp_toxicity.transform.parent.Find("Dial").GetChild(0).GetComponent<Image>().enabled = true;
+            // Break the toxicity into sections based on commas
+            string[] toxicityArray = toxicity.Split(char.Parse(","));
+            // First section is always a value of some sort
+            switch(toxicityArray[0])
+            {
+                case "t0":
+                    tmp_toxicity.transform.parent.Find("Dial").GetChild(0).GetChild(0).GetComponent<RectTransform>().eulerAngles = new Vector3(0,0,70);
+                    break;
+                case "t1":
+                    tmp_toxicity.transform.parent.Find("Dial").GetChild(0).GetChild(0).GetComponent<RectTransform>().eulerAngles = new Vector3(0,0,20);
+                    break;
+                case "t2":
+                    tmp_toxicity.transform.parent.Find("Dial").GetChild(0).GetChild(0).GetComponent<RectTransform>().eulerAngles = new Vector3(0,0,-20);
+                    break;
+                case "t3":
+                    tmp_toxicity.transform.parent.Find("Dial").GetChild(0).GetChild(0).GetComponent<RectTransform>().eulerAngles = new Vector3(0,0,-70);
+                    break;
+            }
+            string toxicityDesc = "";
+            for(int i = 0; i < toxicityArray.Length; i++)
+            {
+                Debug.Log("Toxicity Loop Test: " + toxicityArray[i]);
+                // Check if the first or second (accounting for formatting errors) character of the secion is '['
+                if (toxicityArray[i][0] == '[' || toxicityArray[i][1] == '[')
+                {
+                    //Debug.Log("Toxicity If Test");
+                    // Then we are dealing with the description of the toxicity (remove the initial space and bracket )
+                    toxicityDesc = toxicityArray[i].Substring(2, toxicityArray[i].Length-2);
+                    // We assume once we begin the description, the rest of the array is the description
+                    if(i == toxicityArray.Length-1) toxicityDesc.Substring(0,toxicityDesc.Length-2);
+                    else
+                    {
+                        Debug.Log("Toxicity Continues");
+                        for(int j = i+1; j < toxicityArray.Length; j++)
+                        {
+                            if(j == (toxicityArray.Length-1)) toxicityDesc += toxicityArray[j].Substring(0, toxicityArray[j].Length-2);
+                            else toxicityDesc += toxicityArray[j];
+                        }
+                        break;
+                    }
+                }
+            }
+            tmp_toxicity.text = string.Format("<b>Toxicity:</b> {0}", toxicityDesc);
+        }
+        
 
         string[] test = Link(moleAclass); // check to see if moleAclass has a link attached to it
         tmp_moleAname.text = "<b>Molecule Name: </b>" + moleAname;
@@ -289,6 +342,7 @@ public class Plant : MonoBehaviour
         tmp_moleCname.text = "<b>Molecule Name: </b>";
         tmp_moleCclass.text = "<b>Class Name: </b>";
         tmp_hardiness.text = "<b>Hardiness Zones: </b>";
+        tmp_toxicity.text = "<b>Toxicity: </b>";
         foreach (GameObject obj in hardinessImages)
         {
             obj.SetActive(false);
@@ -337,7 +391,7 @@ public class Plant : MonoBehaviour
             totalButtons++;
         }
         // Check for more information
-        if (toxicity != 0 || hardiness[0] != -1)
+        if (toxicity != "" || hardiness[0] != -1)
         {
             buttons.Add("MoreInfo_Button");
             totalButtons++;
@@ -403,7 +457,6 @@ public class Plant : MonoBehaviour
             plantModel = CreateModels(plantModel, "Plant Model : " + comName);
             plantModel.transform.parent = plantModel.transform.parent.parent;
             plantModel.transform.localScale = Vector3.one;
-
         }
         if (moleAmodel != null) // create moleA model if one is provided
         {
@@ -546,7 +599,7 @@ public class PlantEditor : Editor
             // Medicinal
             if (model.medicinal != null && model.medicinal != "")
             {
-                showDesc = EditorGUILayout.Foldout(showDesc, "Medicinal");
+                showMed = EditorGUILayout.Foldout(showMed, "Medicinal");
                 EditorStyles.textArea.wordWrap = true;
                 if (showMed) model.medicinal = EditorGUILayout.TextArea(model.medicinal, EditorStyles.textArea, GUILayout.Width(350), GUILayout.ExpandWidth(true));
             }
@@ -555,7 +608,11 @@ public class PlantEditor : Editor
             GUILayout.Label("Toxicity: " + model.toxicity);
 
             // Hardiness
-            // if ((model.hardiness[0] >= 0) && (model.hardiness[1] >= 0) && model.hardiness != null) GUILayout.Label("Hardiness: " + model.hardiness[0] + "-" + model.hardiness[1]);
+             if ((model.hardiness[0] >= 0) && (model.hardiness[1] >= 0) && model.hardiness != null)
+             {
+                 if(model.hardiness[0] != model.hardiness[1]) GUILayout.Label("Hardiness: " + model.hardiness[0] + "-" + model.hardiness[1]);
+                 else GUILayout.Label("Hardiness: " + model.hardiness[0]);
+             }
 
             // Extra Links
             GUILayout.Label("Extra Links:");

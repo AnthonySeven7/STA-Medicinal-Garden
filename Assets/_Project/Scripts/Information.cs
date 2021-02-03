@@ -137,7 +137,7 @@ public class Information : MonoBehaviour
     {
         // Initiate Variables
         bool test1 = true;
-        string comName, sciName, family, moleAname, moleAclass, moleBname, moleBclass, moleCname, moleCclass, medicinal, description;
+        string comName, sciName, family, moleAname, moleAclass, moleBname, moleBclass, moleCname, moleCclass, medicinal, description, toxicity;
         int[] hardiness;
         //string[] links;
         GameObject emptyGameObject, mainModel, moleAmodel, moleBmodel, moleCmodel;
@@ -178,14 +178,22 @@ public class Information : MonoBehaviour
                     moleCname = plants[x][7];
                     moleCclass = plants[x][8];
                     medicinal = plants[x][9];
-                    if (!int.TryParse(plants[x][10], out int toxicity)) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s toxicity non-convertable : '{1}'.", comName, plants[x][10])); // If the toxicity is not in the form ex:"123", then display an error message
+                    toxicity = plants[x][10];
                     description = plants[x][11];
                     var hard = plants[x][12].Split(' ');
-                    if (hard.Length != 3) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness not of form '# to #'.", comName));
+                    if (hard.Length != 3 && hard.Length != 1) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness not of form '# to #'.", comName));
                     else
                     {
-                        if (!int.TryParse(hard[0], out hardiness[0])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[0])); // If the hardinessStart is not in the form ex:"123", then display an error message
-                        if (!int.TryParse(hard[2], out hardiness[1])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[2])); // If the hardinessEnd is not in the form ex:"123", then display an error message
+                        if (hard.Length == 3) // If a range of hardiness zones was provided
+                        {
+                            if (!int.TryParse(hard[0], out hardiness[0])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[0])); // If the hardinessStart is not in the form ex:"123", then display an error message
+                            if (!int.TryParse(hard[2], out hardiness[1])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[2])); // If the hardinessEnd is not in the form ex:"123", then display an error message
+                        }
+                        else // If only one hardiness zone was provided
+                        {
+                            if (!int.TryParse(hard[0], out hardiness[0])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[0])); // If the hardinessStart is not in the form ex:"123", then display an error message
+                            if (!int.TryParse(hard[0], out hardiness[1])) Debug.Log(string.Format("<color=red>ERROR : </color> {0}'s hardiness non-convertable : '{1}'.", comName, hard[0])); // If the hardinessStart is not in the form ex:"123", then display an error message
+                        }
                     }
                     // 'links' is equal to the string of links broken up by spaces 
                     string[] links = plants[x][13].Split(' ');
@@ -237,7 +245,7 @@ public class Information : MonoBehaviour
                 }
             }
             if (!match) Debug.Log(string.Format("<color=red>ERROR :</color> '{0}' does not match any plant in database.", plantObj[i].name));
-            plantObj[i].name = ("Track : " + plantObj[i].name);
+            plantObj[i].name = (plantObj[i].name);
         }
         return test1;
     }

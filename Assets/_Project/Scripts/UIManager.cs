@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     public GameObject  gen, molA, molB, molC, more, selected;
     [Space]
     public string activePanel;
+    public GameObject currentPlant;
     [Space]
     [Header("Text With Resizeable Component")]
     public List<TextMeshProUGUI> tmpComponents;
@@ -76,11 +77,12 @@ public class UIManager : MonoBehaviour
 
     public void CheckPanel(GameObject pointer, string name)
     {
+        bool modelCheck = false;
         if(activePanel != "") // If there's a panel selected
         {
             if(selected != null)
             {
-                Debug.Log("Test");
+                Debug.Log("Test: " + activePanel + " " + panelActive);
                 if(panelActive)
                 {
                     StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
@@ -99,36 +101,19 @@ public class UIManager : MonoBehaviour
         if (activePanel != name)
         {
             selected = pointer;
+            activePanel = name;
             if (name != "opt")
             {
                 panelActive = false;
+                foreach(Transform child in currentPlant.transform)
+                {
+                    if (name == "moleA" && child.gameObject.name.StartsWith("Mole A")) modelCheck = true;
+                    else if (name == "moleB" && child.gameObject.name.StartsWith("Mole B")) modelCheck = true;
+                    else if (name == "moleC" && child.gameObject.name.StartsWith("Mole C")) modelCheck = true;
+                }
+                if (name == "gen_info" || name == "more" || !modelCheck) CheckPanel(pointer, name);
             }
-            activePanel = name;
         }
-
-        //if (activePanel != "") // if there's a panel open
-        //{ 
-        //    if (selected != null)
-        //    {
-        //        StartCoroutine(PanelAnimate(selected, 0.0f, "down"));
-        //    }
-        //}
-
-        //if (activePanel != name) // if active panel is not what we just clicked
-        //{
-        //    selected = pointer;
-        //    if (name != "opt")
-        //    {
-        //        StartCoroutine(PanelAnimate(selected, 0.3f, "up"));
-        //    }
-        //    activePanel = name;
-        //}
-
-        //else // if we closed the open panel
-        //{
-        //    selected = null;
-        //    activePanel = "";
-        //}
     }
 
     // Change the font size of all tmpComponents
