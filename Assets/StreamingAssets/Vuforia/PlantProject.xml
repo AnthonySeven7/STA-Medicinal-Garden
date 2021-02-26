@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
-    <ImageTarget name="GumArabicTree" size="0.200000 0.160185" />
     <ImageTarget name="GreenwaveYew" size="0.200000 0.160185" />
+    <ImageTarget name="Banana" size="0.200000 0.160185" />
     <ImageTarget name="TeaTree" size="0.200000 0.160185" />
     <ImageTarget name="TeaPlant" size="0.200000 0.160185" />
-    <ImageTarget name="CenturyPlant" size="0.200000 0.160185" />
-    <ImageTarget name="CastorBean" size="0.200000 0.160185" />
-    <ImageTarget name="ChocolateBoneset" size="0.200000 0.160185" />
-    <ImageTarget name="PelicanFlower" size="0.200000 0.160185" />
-    <ImageTarget name="Pomegranate" size="0.200000 0.160185" />
-    <ImageTarget name="Papaya" size="0.200000 0.160185" />
     <ImageTarget name="SugarCane" size="0.200000 0.160185" />
-    <ImageTarget name="Coffee" size="0.200000 0.160185" />
-    <ImageTarget name="IndianSnakeroot" size="0.200000 0.160185" />
     <ImageTarget name="Stevia" size="0.200000 0.160185" />
-    <ImageTarget name="Banana" size="0.200000 0.160185" />
-    <ImageTarget name="MadagascarPeriwinkle" size="0.200000 0.160185" />
-    <ImageTarget name="EphedraMaHuang" size="0.200000 0.160185" />
-    <ImageTarget name="Aloe" size="0.200000 0.160185" />
     <ImageTarget name="RedMaple" size="0.200000 0.160185" />
+    <ImageTarget name="PonderosaLemon" size="0.200000 0.160185" />
+    <ImageTarget name="Pomegranate" size="0.200000 0.160185" />
+    <ImageTarget name="PelicanFlower" size="0.200000 0.160185" />
+    <ImageTarget name="Papaya" size="0.200000 0.160185" />
+    <ImageTarget name="MadagascarPeriwinkle" size="0.200000 0.160185" />
+    <ImageTarget name="KavaKava" size="0.200000 0.160185" />
+    <ImageTarget name="IndianSnakeroot" size="0.200000 0.160185" />
+    <ImageTarget name="GumArabicTree" size="0.200000 0.160185" />
+    <ImageTarget name="EphedraMaHuang" size="0.200000 0.160185" />
+    <ImageTarget name="Coffee" size="0.200000 0.160185" />
+    <ImageTarget name="Chocolate" size="0.200000 0.160185" />
+    <ImageTarget name="CastorBean" size="0.200000 0.160185" />
+    <ImageTarget name="Aloe" size="0.200000 0.160185" />
   </Tracking>
 </QCARConfig>
